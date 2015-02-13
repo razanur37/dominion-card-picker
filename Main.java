@@ -4,8 +4,8 @@ import dominion.Dominion;
 
 public class Main {
     public static void main(String[] args) {
-	Dominion dominion = new Dominion();
+        Dominion dominion = new Dominion("BASE");
 
-	dominion.setup();
+        dominion.setup();
     }
 }
