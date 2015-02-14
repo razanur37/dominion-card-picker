@@ -14,6 +14,7 @@ public class Dominion {
     private static final ArrayList<String> ALL_SETS = new ArrayList<String>(Arrays.asList("BASE", "INTRIGUE", "SEASIDE", "ALCHEMY", "PROSPERITY", "CORNUCOPIA", "HINTERLANDS", "DARK AGES", "GUILDS"));
     private ArrayList<String> sets;
     private ArrayList<Card> cardPool;
+    private Game game;
 
     public Dominion(ArrayList<String> sets) {
         this.sets = new ArrayList<String>();
@@ -71,11 +72,9 @@ public class Dominion {
     }
 
     public void setup() {
-        Game game = new Game(cardPool);
+        game = new Game(cardPool);
 
         game.pickCards();
-
-        game.displayCards();
     }
 
     private ArrayList<Card> getCardPool() {
@@ -120,5 +119,9 @@ public class Dominion {
         }
 
         return cards;
+    }
+
+    public void display() {
+        game.displayCards();
     }
 }

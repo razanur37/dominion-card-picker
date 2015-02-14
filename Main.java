@@ -7,5 +7,7 @@ public class Main {
         Dominion dominion = new Dominion("BASE");
 
         dominion.setup();
+
+        dominion.display();
     }
 }
