@@ -54,15 +54,19 @@ public class Dominion {
         cardPool = getCardPool();
     }
 
-    public Dominion(String set) {
-        sets = new ArrayList<String>();
+    public Dominion(String sets) {
+        this.sets = new ArrayList<String>();
+
+        String[] setsArray = sets.split(", ");
 
         try {
-            if (!ALL_SETS.contains(set.toUpperCase())) {
-                throw new IllegalArgumentException("Set " + set + "is not a valid Dominion set");
-            }
+            for (String singleChosenSet: setsArray) {
+                if (!ALL_SETS.contains(singleChosenSet.toUpperCase())) {
+                    throw new IllegalArgumentException("Set " + singleChosenSet + "is not a valid Dominion set");
+                }
 
-            sets.add(set);
+                this.sets.add(singleChosenSet);
+            }
         } catch (Exception e) {
             System.err.println("ERROR: " + e.getMessage());
             System.exit(1);
@@ -87,31 +91,33 @@ public class Dominion {
             c = DriverManager.getConnection("jdbc:sqlite:cards.db");
             c.setAutoCommit(false);
 
-            stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from BASE;");
-            while (rs.next()) {
-                String name = rs.getString("name");
-                ArrayList<String> types = new ArrayList<String>(Arrays.asList(rs.getString("types").split(", ")));
-                int cost = rs.getInt("cost");
-                String attrs = rs.getString("attributes");
-                ArrayList<String> attributes = null;
-                if (attrs != null) {
-                    attributes = new ArrayList<String>(Arrays.asList(rs.getString("attributes").split(", ")));
+            for(String set : sets) {
+                stmt = c.createStatement();
+                ResultSet rs = stmt.executeQuery("select * from " + set + ";");
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    ArrayList<String> types = new ArrayList<String>(Arrays.asList(rs.getString("types").split(", ")));
+                    int cost = rs.getInt("cost");
+                    String attrs = rs.getString("attributes");
+                    ArrayList<String> attributes = null;
+                    if (attrs != null) {
+                        attributes = new ArrayList<String>(Arrays.asList(rs.getString("attributes").split(", ")));
+                    }
+
+                    Card card;
+
+                    if (attributes != null) {
+                        card = new Card(name, types, cost, attributes);
+                    } else {
+                        card = new Card(name, types, cost);
+                    }
+
+                    cards.add(card);
                 }
 
-                Card card;
-
-                if (attributes != null) {
-                    card = new Card(name, types, cost, attributes);
-                } else {
-                    card = new Card(name, types, cost);
-                }
-
-                cards.add(card);
+                rs.close();
+                stmt.close();
             }
-
-            rs.close();
-            stmt.close();
             c.close();
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
