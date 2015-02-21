@@ -9,11 +9,12 @@ jdk:
 
 before_install:
 - sudo apt-get update
+- wget https://bitbucket.org/xerial/sqlite-jdbc/downloads/sqlite-jdbc-3.8.7.jar
 
 before_script:
 - javac Main.java
 - javac Test.java
 
 script:
-- java Main
-- java -ea Test
+- java -classpath ".:sqlite-jdbc-3.8.7.jar" Main
+- java -ea -classpath ".:sqlite-jdbc-3.8.7.jar" Test
