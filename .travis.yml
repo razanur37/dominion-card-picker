@@ -1,0 +1,19 @@
+# Copyright (C) 2015 by Casey English
+
+language: java
+
+jdk:
+-oraclejdk8
+-oraclejdk7
+-openjdk7
+
+before_install:
+-sudo apt-get update
+
+before_script:
+-javac Main.java
+-javac Test.java
+
+script:
+-java Main
+-java -ea Test

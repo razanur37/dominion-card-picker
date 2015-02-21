@@ -32,7 +32,7 @@ public class Dominion {
             System.exit(1);
         }
 
-        cardPool = getCardPool();
+        cardPool = generateCardPool();
     }
 
     public Dominion(String[] sets) {
@@ -51,7 +51,7 @@ public class Dominion {
             System.exit(1);
         }
 
-        cardPool = getCardPool();
+        cardPool = generateCardPool();
     }
 
     public Dominion(String set) {
@@ -68,7 +68,7 @@ public class Dominion {
             System.exit(1);
         }
 
-        cardPool = getCardPool();
+        cardPool = generateCardPool();
     }
 
     public void setup() {
@@ -77,7 +77,7 @@ public class Dominion {
         game.pickCards();
     }
 
-    private ArrayList<Card> getCardPool() {
+    private ArrayList<Card> generateCardPool() {
         ArrayList<Card> cards = new ArrayList<Card>();
 
         Connection c;
@@ -121,7 +121,24 @@ public class Dominion {
         return cards;
     }
 
-    public void display() {
-        game.displayCards();
+    public ArrayList<String> getGameCardNames() {
+        ArrayList<String> cardNames = new ArrayList<String>();
+
+        for(Card card : game.getCards()) {
+            cardNames.add(card.getName());
+        }
+
+        return cardNames;
     }
+
+    public ArrayList<String> getCardPool() {
+        ArrayList<String> cards = new ArrayList<String>();
+
+        for(Card card : cardPool) {
+            cards.add(card.getName());
+        }
+
+        return cards;
+    }
+
 }
