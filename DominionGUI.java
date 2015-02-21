@@ -71,6 +71,12 @@ public class DominionGUI {
     }
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            System.exit(1);
+        }
+
         JFrame frame = new JFrame("Dominion Card Picker");
         frame.setContentPane(new DominionGUI().panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
