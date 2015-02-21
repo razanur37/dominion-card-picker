@@ -8,6 +8,8 @@ public class Main {
 
         dominion.setup();
 
-        dominion.display();
+        for(String card : dominion.getGameCardNames()) {
+            System.out.println(card);
+        }
     }
 }

@@ -26,9 +26,7 @@ public class Game {
         }
     }
 
-    protected void displayCards() {
-        for(Card singleCard : gameCards) {
-            System.out.println(singleCard.getName());
-        }
+    protected ArrayList<Card> getCards() {
+        return gameCards;
     }
 }
