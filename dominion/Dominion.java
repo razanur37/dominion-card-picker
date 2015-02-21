@@ -127,7 +127,13 @@ public class Dominion {
         return cards;
     }
 
-    public void display() {
-        game.displayCards();
+    public ArrayList<String> getGameCardNames() {
+        ArrayList<String> cardNames = new ArrayList<String>();
+
+        for(Card card : game.getCards()) {
+            cardNames.add(card.getName());
+        }
+
+        return cardNames;
     }
 }
