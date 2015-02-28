@@ -2,15 +2,14 @@
 
 import dominion.Dominion;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class Main {
     public static void main(String[] args) {
-        Dominion dominion = new Dominion("CORNUCOPIA");
+        Dominion dominion = new Dominion("CORNUCOPIA, DARK AGES, BASE, SEASIDE");
 
         dominion.setup();
 
-        dominion.display();
+        for(String card : dominion.getGameCardNames()) {
+            System.out.println(card);
+        }
     }
 }

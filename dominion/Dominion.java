@@ -93,7 +93,7 @@ public class Dominion {
 
             for(String set : sets) {
                 stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("select * from " + set + ";");
+                ResultSet rs = stmt.executeQuery("select * from '" + set + "';");
                 while (rs.next()) {
                     String name = rs.getString("name");
                     ArrayList<String> types = new ArrayList<String>(Arrays.asList(rs.getString("types").split(", ")));
@@ -135,5 +135,15 @@ public class Dominion {
         }
 
         return cardNames;
+    }
+
+    public ArrayList<Integer> getGameCardCosts() {
+        ArrayList<Integer> cardCosts = new ArrayList<Integer>();
+
+        for(Card card : game.getCards()) {
+            cardCosts.add(card.getCost());
+        }
+
+        return cardCosts;
     }
 }

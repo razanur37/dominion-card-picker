@@ -18,6 +18,12 @@ public class DominionGUI {
     private JCheckBox baseCheckBox;
     private JCheckBox intrigueCheckBox;
     private JCheckBox seasideCheckBox;
+    private JCheckBox alchemyCheckBox;
+    private JCheckBox prosperityCheckBox;
+    private JCheckBox cornucopiaCheckBox;
+    private JCheckBox hinterlandsCheckBox;
+    private JCheckBox darkAgesCheckBox;
+    private JCheckBox guildsCheckBox;
     private JButton generateButton;
     private JTextArea cardList;
 
@@ -40,9 +46,18 @@ public class DominionGUI {
                 }
             }
         };
+
         baseCheckBox.addItemListener(listener);
         intrigueCheckBox.addItemListener(listener);
         seasideCheckBox.addItemListener(listener);
+        alchemyCheckBox.addItemListener(listener);
+        prosperityCheckBox.addItemListener(listener);
+        cornucopiaCheckBox.addItemListener(listener);
+        cornucopiaCheckBox.addItemListener(listener);
+        hinterlandsCheckBox.addItemListener(listener);
+        darkAgesCheckBox.addItemListener(listener);
+        guildsCheckBox.addItemListener(listener);
+
         generateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -52,10 +67,22 @@ public class DominionGUI {
 
                 if (baseCheckBox.isSelected())
                     chosenSets.add("BASE");
-                if(intrigueCheckBox.isSelected())
+                if (intrigueCheckBox.isSelected())
                     chosenSets.add("INTRIGUE");
-                if(seasideCheckBox.isSelected())
+                if (seasideCheckBox.isSelected())
                     chosenSets.add("SEASIDE");
+                if (alchemyCheckBox.isSelected())
+                    chosenSets.add("ALCHEMY");
+                if (prosperityCheckBox.isSelected())
+                    chosenSets.add("PROSPERITY");
+                if (cornucopiaCheckBox.isSelected())
+                    chosenSets.add("CORNUCOPIA");
+                if (hinterlandsCheckBox.isSelected())
+                    chosenSets.add("HINTERLANDS");
+                if (darkAgesCheckBox.isSelected())
+                    chosenSets.add("DARK AGES");
+                if (guildsCheckBox.isSelected())
+                    chosenSets.add("GUILDS");
 
                 Dominion dominion = new Dominion(chosenSets);
 
