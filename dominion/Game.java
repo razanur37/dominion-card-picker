@@ -16,14 +16,30 @@ public class Game {
     
     protected void pickCards() {
 	    Random randomizer = new Random();
+        boolean needBane = false;
 	    
 	    while (gameCards.size() != 10) {
-            Card chosen_card;
+            Card chosenCard;
             do {
-                chosen_card = cardPool.get(randomizer.nextInt(cardPool.size()));
-            } while (gameCards.contains(chosen_card));
-            gameCards.add(chosen_card);
+                chosenCard = cardPool.get(randomizer.nextInt(cardPool.size()));
+            } while (gameCards.contains(chosenCard));
+            gameCards.add(chosenCard);
+
+            if (chosenCard.getName().equals("Young Witch"))
+                needBane = true;
         }
+
+        if (needBane) {
+            Card baneCard;
+
+            do {
+                baneCard = cardPool.get(randomizer.nextInt(cardPool.size()));
+            } while (gameCards.contains(baneCard) && baneCard.getCost() != 2 && baneCard.getCost() != 3);
+
+            gameCards.add(baneCard);
+        }
+
+
     }
 
     protected ArrayList<Card> getCards() {
