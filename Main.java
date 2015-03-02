@@ -4,7 +4,7 @@ import dominion.Dominion;
 
 public class Main {
     public static void main(String[] args) {
-        Dominion dominion = new Dominion("CORNUCOPIA, DARK AGES, BASE, SEASIDE");
+        Dominion dominion = new Dominion("GUILDS, BLACK MARKET");
 
         dominion.setup();
 

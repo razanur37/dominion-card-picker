@@ -24,8 +24,14 @@ public class DominionGUI {
     private JCheckBox hinterlandsCheckBox;
     private JCheckBox darkAgesCheckBox;
     private JCheckBox guildsCheckBox;
-    private JButton generateButton;
     private JTextArea cardList;
+    private JCheckBox blackMarketCheckBox;
+    private JCheckBox envoyCheckBox;
+    private JCheckBox walledVillageCheckBox;
+    private JCheckBox governorCheckBox;
+    private JCheckBox stashCheckBox;
+    private JCheckBox princeCheckBox;
+    private JButton generateButton;
 
     private int setsSelected = 0;
 
@@ -57,7 +63,7 @@ public class DominionGUI {
         hinterlandsCheckBox.addItemListener(listener);
         darkAgesCheckBox.addItemListener(listener);
         guildsCheckBox.addItemListener(listener);
-
+        cardList.append("<html><b>Sets</b></html>");
         generateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -83,12 +89,24 @@ public class DominionGUI {
                     chosenSets.add("DARK AGES");
                 if (guildsCheckBox.isSelected())
                     chosenSets.add("GUILDS");
+                if (blackMarketCheckBox.isSelected())
+                    chosenSets.add("BLACK MARKET");
+                if (envoyCheckBox.isSelected())
+                    chosenSets.add("ENVOY");
+                if (walledVillageCheckBox.isSelected())
+                    chosenSets.add("WALLED VILLAGE");
+                if (governorCheckBox.isSelected())
+                    chosenSets.add("GOVERNOR");
+                if (stashCheckBox.isSelected())
+                    chosenSets.add("STASH");
+                if (princeCheckBox.isSelected())
+                    chosenSets.add("PRINCE");
 
                 Dominion dominion = new Dominion(chosenSets);
 
                 dominion.setup();
 
-                ArrayList<String> gameCards = new ArrayList<String >(dominion.getGameCardNames());
+                ArrayList<String> gameCards = new ArrayList<String>(dominion.getGameCardNames());
 
                 for (String card : gameCards) {
                     cardList.append(card + '\n');
