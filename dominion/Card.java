@@ -12,19 +12,11 @@ public class Card {
     private ArrayList<String> attributes;
     private String set;
 
-    protected Card(String name, ArrayList<String> types, int cost, String set) {
-        this.name = name;
-        this.types = new ArrayList<String>(types);
-        this.cost = cost;
-        this.attributes = null;
-        this.set = set;
-    }
-
     protected Card(String name, ArrayList<String> types, int cost, ArrayList<String> attributes, String set) {
         this.name = name;
-        this.types = new ArrayList<String>(types);
+        this.types = new ArrayList<>(types);
         this.cost = cost;
-        this.attributes = new ArrayList<String>(attributes);
+        this.attributes = new ArrayList<>(attributes);
         this.set = set;
     }
 

@@ -12,13 +12,13 @@ import java.util.Random;
 
 public class Dominion {
 
-    private static final ArrayList<String> ALL_SETS = new ArrayList<String>(
+    private static final ArrayList<String> ALL_SETS = new ArrayList<>(
             Arrays.asList(
                     "BASE", "INTRIGUE", "SEASIDE", "ALCHEMY", "PROSPERITY",
                     "CORNUCOPIA", "HINTERLANDS", "DARK AGES", "GUILDS"
             )
     );
-    private static final ArrayList<String> PROMOS = new ArrayList<String>(
+    private static final ArrayList<String> PROMOS = new ArrayList<>(
             Arrays.asList(
                     "BLACK MARKET", "ENVOY", "WALLED VILLAGE", "GOVERNOR",
                     "STASH", "PRINCE"
@@ -27,10 +27,9 @@ public class Dominion {
     private ArrayList<String> sets;
     private ArrayList<Card> cardPool;
     private ArrayList<Card> gameCards;
-    private Game game;
 
     public Dominion(ArrayList<String> sets) {
-        this.sets = new ArrayList<String>();
+        this.sets = new ArrayList<>();
 
         try {
             for (String singleChosenSet: sets) {
@@ -52,15 +51,15 @@ public class Dominion {
     }
 
     public Dominion(String[] sets) {
-        this(new ArrayList<String>(Arrays.asList(sets)));
+        this(new ArrayList<>(Arrays.asList(sets)));
     }
 
     public Dominion(String sets) {
-        this(new ArrayList<String>(Arrays.asList(sets.split(", "))));
+        this(new ArrayList<>(Arrays.asList(sets.split(", "))));
     }
 
     public void setup() {
-        gameCards = new ArrayList<Card>();
+        gameCards = new ArrayList<>();
 
         Random randomizer = new Random();
         boolean needBane = false;
@@ -88,7 +87,7 @@ public class Dominion {
     }
 
     private ArrayList<Card> getCardPool() {
-        ArrayList<Card> cards = new ArrayList<Card>();
+        ArrayList<Card> cards = new ArrayList<>();
 
         Connection c;
         Statement stmt;
@@ -104,22 +103,17 @@ public class Dominion {
                 ResultSet rs = stmt.executeQuery("select * from '" + workingSet + "'" + promo + ";");
                 while (rs.next()) {
                     String name = rs.getString("name");
-                    ArrayList<String> types = new ArrayList<String>(Arrays.asList(rs.getString("types").split(", ")));
+                    ArrayList<String> types = new ArrayList<>(Arrays.asList(rs.getString("types").split(", ")));
                     int cost = rs.getInt("cost");
                     String attrs = rs.getString("attributes");
-                    ArrayList<String> attributes = null;
+                    ArrayList<String> attributes;
                     if (attrs != null) {
-                        attributes = new ArrayList<String>(Arrays.asList(rs.getString("attributes").split(", ")));
-                    }
-
-                    Card card;
-
-                    if (attributes != null) {
-                        card = new Card(name, types, cost, attributes, workingSet);
+                        attributes = new ArrayList<>(Arrays.asList(rs.getString("attributes").split(", ")));
                     } else {
-                        card = new Card(name, types, cost, workingSet);
+                        attributes = new ArrayList<>();
                     }
 
+                    Card card = new Card(name, types, cost, attributes, workingSet);
                     cards.add(card);
                 }
 

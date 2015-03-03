@@ -67,7 +67,7 @@ public class DominionGUI {
         generateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<String> chosenSets = new ArrayList<String>();
+                ArrayList<String> chosenSets = new ArrayList<>();
 
                 if (baseCheckBox.isSelected())
                     chosenSets.add("BASE");
@@ -145,21 +145,4 @@ public class DominionGUI {
         }
         return path;
     }
-
-    Comparator<Card> nameComparator = new Comparator<Card>() {
-        @Override
-        public int compare(Card card1, Card card2)
-        {
-
-            return  card1.getName().compareTo(card2.getName());
-        }
-    };
-
-    Comparator<Card> costComparator = new Comparator<Card>() {
-        @Override
-        public int compare(Card card1, Card card2)
-        {
-            return Integer.compare(card1.getCost(), card2.getCost());
-        }
-    };
 }
