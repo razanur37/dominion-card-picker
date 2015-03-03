@@ -9,9 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import javax.swing.*;
-import javax.swing.text.StringContent;
 
 public class DominionGUI {
     private JPanel panel;
@@ -24,7 +23,7 @@ public class DominionGUI {
     private JCheckBox hinterlandsCheckBox;
     private JCheckBox darkAgesCheckBox;
     private JCheckBox guildsCheckBox;
-    private JTextArea cardList;
+    private JTextPane cardList;
     private JCheckBox blackMarketCheckBox;
     private JCheckBox envoyCheckBox;
     private JCheckBox walledVillageCheckBox;
@@ -63,12 +62,9 @@ public class DominionGUI {
         hinterlandsCheckBox.addItemListener(listener);
         darkAgesCheckBox.addItemListener(listener);
         guildsCheckBox.addItemListener(listener);
-        cardList.append("<html><b>Sets</b></html>");
         generateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cardList.setText(null);
-
                 ArrayList<String> chosenSets = new ArrayList<String>();
 
                 if (baseCheckBox.isSelected())
@@ -107,12 +103,31 @@ public class DominionGUI {
                 dominion.setup();
 
                 ArrayList<String> gameCards = new ArrayList<String>(dominion.getGameCardNames());
+                Collections.sort(gameCards);
 
-                for (String card : gameCards) {
-                    cardList.append(card + '\n');
+                String cardsTable = "<table><tr>";
+                
+                for (int i=0; i<gameCards.size(); ++i) {
+                    if (i == 5)
+                        cardsTable = cardsTable + "</tr><tr>";
+                    cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i)) + "</td>";
                 }
+                
+                cardsTable = cardsTable + "</tr></table>";
+
+                cardList.setText(cardsTable);
             }
         });
+    }
+    
+    private String getFile(String filename) {
+        String path;
+        try {
+            path = "<img src=\"" + this.getClass().getClassLoader().getResource("img/" + filename.replace(' ', '_') + ".jpg") + "\">";
+        } catch (Exception e) {
+            path = filename + ".jpg";
+        }
+        return path;
     }
 
     public static void main(String[] args) {
@@ -124,7 +139,7 @@ public class DominionGUI {
 
         JFrame frame = new JFrame("Dominion Card Picker");
         frame.setContentPane(new DominionGUI().panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
