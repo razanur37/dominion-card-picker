@@ -3,6 +3,7 @@
  */
 
 import dominion.Dominion;
+import dominion.Card;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.*;
 
 public class DominionGUI {
@@ -102,15 +104,15 @@ public class DominionGUI {
 
                 dominion.setup();
 
-                ArrayList<String> gameCards = new ArrayList<String>(dominion.getGameCardNames());
-                Collections.sort(gameCards);
+                ArrayList<Card> gameCards = new ArrayList<>(dominion.getCards());
+                Collections.sort(gameCards, Comparator.comparing(Card::getCost).thenComparing(Card::getName));
 
                 String cardsTable = "<table><tr>";
                 
                 for (int i=0; i<gameCards.size(); ++i) {
                     if (i == 5 || i== 10)
                         cardsTable = cardsTable + "</tr><tr>";
-                    cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i)) + "</td>";
+                    cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i).getName()) + "</td>";
                 }
                 
                 cardsTable = cardsTable + "</tr></table>";
@@ -118,16 +120,6 @@ public class DominionGUI {
                 cardList.setText(cardsTable);
             }
         });
-    }
-    
-    private String getFile(String filename) {
-        String path;
-        try {
-            path = "<img src=\"" + this.getClass().getClassLoader().getResource("img/" + filename.replace(' ', '_') + ".jpg") + "\">";
-        } catch (Exception e) {
-            path = filename + ".jpg";
-        }
-        return path;
     }
 
     public static void main(String[] args) {
@@ -143,4 +135,31 @@ public class DominionGUI {
         frame.pack();
         frame.setVisible(true);
     }
+
+    private String getFile(String filename) {
+        String path;
+        try {
+            path = "<img src=\"" + this.getClass().getClassLoader().getResource("img/" + filename.replace(' ', '_') + ".jpg") + "\">";
+        } catch (Exception e) {
+            path = filename + ".jpg";
+        }
+        return path;
+    }
+
+    Comparator<Card> nameComparator = new Comparator<Card>() {
+        @Override
+        public int compare(Card card1, Card card2)
+        {
+
+            return  card1.getName().compareTo(card2.getName());
+        }
+    };
+
+    Comparator<Card> costComparator = new Comparator<Card>() {
+        @Override
+        public int compare(Card card1, Card card2)
+        {
+            return Integer.compare(card1.getCost(), card2.getCost());
+        }
+    };
 }

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class Dominion {
 
@@ -25,6 +26,7 @@ public class Dominion {
     );
     private ArrayList<String> sets;
     private ArrayList<Card> cardPool;
+    private ArrayList<Card> gameCards;
     private Game game;
 
     public Dominion(ArrayList<String> sets) {
@@ -50,55 +52,39 @@ public class Dominion {
     }
 
     public Dominion(String[] sets) {
-        this.sets = new ArrayList<String>();
-
-        try {
-            for (String singleChosenSet: sets) {
-                if (!ALL_SETS.contains(singleChosenSet.toUpperCase()) &&
-                        !PROMOS.contains(singleChosenSet.toUpperCase())) {
-                    throw new IllegalArgumentException("Set " + singleChosenSet + "is not a valid Dominion set");
-                }
-
-                String set = PROMOS.contains(singleChosenSet) ? "PROMO-"+properCase(singleChosenSet)  : singleChosenSet;
-
-                this.sets.add(set);
-            }
-        } catch (Exception e) {
-            System.err.println("ERROR: " + e.getMessage());
-            System.exit(1);
-        }
-
-        cardPool = getCardPool();
+        this(new ArrayList<String>(Arrays.asList(sets)));
     }
 
     public Dominion(String sets) {
-        this.sets = new ArrayList<String>();
-
-        String[] setsArray = sets.split(", ");
-
-        try {
-            for (String singleChosenSet: setsArray) {
-                if (!ALL_SETS.contains(singleChosenSet.toUpperCase()) &&
-                        !PROMOS.contains(singleChosenSet.toUpperCase())) {
-                    throw new IllegalArgumentException("Set " + singleChosenSet + "is not a valid Dominion set");
-                }
-
-                String set = PROMOS.contains(singleChosenSet) ? "PROMO-"+properCase(singleChosenSet)  : singleChosenSet;
-
-                this.sets.add(set);
-            }
-        } catch (Exception e) {
-            System.err.println("ERROR: " + e.getMessage());
-            System.exit(1);
-        }
-
-        cardPool = getCardPool();
+        this(new ArrayList<String>(Arrays.asList(sets.split(", "))));
     }
 
     public void setup() {
-        game = new Game(cardPool);
+        gameCards = new ArrayList<Card>();
 
-        game.pickCards();
+        Random randomizer = new Random();
+        boolean needBane = false;
+
+        while (gameCards.size() != 10) {
+            Card chosenCard;
+            do {
+                chosenCard = cardPool.get(randomizer.nextInt(cardPool.size()));
+            } while (gameCards.contains(chosenCard));
+            gameCards.add(chosenCard);
+
+            if (chosenCard.getName().equals("Young Witch"))
+                needBane = true;
+        }
+
+        if (needBane) {
+            Card baneCard;
+
+            do {
+                baneCard = cardPool.get(randomizer.nextInt(cardPool.size()));
+            } while (gameCards.contains(baneCard) && baneCard.getCost() != 2 && baneCard.getCost() != 3);
+
+            gameCards.add(baneCard);
+        }
     }
 
     private ArrayList<Card> getCardPool() {
@@ -149,24 +135,8 @@ public class Dominion {
         return cards;
     }
 
-    public ArrayList<String> getGameCardNames() {
-        ArrayList<String> cardNames = new ArrayList<String>();
-
-        for(Card card : game.getCards()) {
-            cardNames.add(card.getName());
-        }
-
-        return cardNames;
-    }
-
-    public ArrayList<Integer> getGameCardCosts() {
-        ArrayList<Integer> cardCosts = new ArrayList<Integer>();
-
-        for(Card card : game.getCards()) {
-            cardCosts.add(card.getCost());
-        }
-
-        return cardCosts;
+    public ArrayList<Card> getCards() {
+        return gameCards;
     }
 
     private String properCase (String input) {

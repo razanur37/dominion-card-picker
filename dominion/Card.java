@@ -28,23 +28,23 @@ public class Card {
         this.set = set;
     }
 
-    protected String getName() {
+    public String getName() {
         return name;
     }
 
-    protected ArrayList<String> getTypes() {
+    public ArrayList<String> getTypes() {
         return types;
     }
 
-    protected int getCost() {
+    public int getCost() {
         return cost;
     }
 
-    protected ArrayList<String> getAttributes() {
+    public ArrayList<String> getAttributes() {
         return attributes;
     }
-    
-    protected String getSet() {
+
+    public String getSet() {
         return set;
     }
 }
