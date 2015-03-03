@@ -108,7 +108,7 @@ public class DominionGUI {
                 String cardsTable = "<table><tr>";
                 
                 for (int i=0; i<gameCards.size(); ++i) {
-                    if (i == 5)
+                    if (i == 5 || i== 10)
                         cardsTable = cardsTable + "</tr><tr>";
                     cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i)) + "</td>";
                 }

@@ -10,19 +10,22 @@ public class Card {
     private ArrayList<String> types;
     private int cost;
     private ArrayList<String> attributes;
+    private String set;
 
-    protected Card(String name, ArrayList<String> types, int cost) {
+    protected Card(String name, ArrayList<String> types, int cost, String set) {
         this.name = name;
         this.types = new ArrayList<String>(types);
         this.cost = cost;
         this.attributes = null;
+        this.set = set;
     }
 
-    protected Card(String name, ArrayList<String> types, int cost, ArrayList<String> attributes) {
+    protected Card(String name, ArrayList<String> types, int cost, ArrayList<String> attributes, String set) {
         this.name = name;
         this.types = new ArrayList<String>(types);
         this.cost = cost;
         this.attributes = new ArrayList<String>(attributes);
+        this.set = set;
     }
 
     protected String getName() {
@@ -39,5 +42,9 @@ public class Card {
 
     protected ArrayList<String> getAttributes() {
         return attributes;
+    }
+    
+    protected String getSet() {
+        return set;
     }
 }

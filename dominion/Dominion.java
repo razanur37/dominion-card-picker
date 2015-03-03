@@ -129,9 +129,9 @@ public class Dominion {
                     Card card;
 
                     if (attributes != null) {
-                        card = new Card(name, types, cost, attributes);
+                        card = new Card(name, types, cost, attributes, workingSet);
                     } else {
-                        card = new Card(name, types, cost);
+                        card = new Card(name, types, cost, workingSet);
                     }
 
                     cards.add(card);
