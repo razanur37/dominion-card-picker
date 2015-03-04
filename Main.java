@@ -5,9 +5,14 @@ import dominion.Card;
 
 public class Main {
     public static void main(String[] args) {
-        Dominion dominion = new Dominion("GUILDS, BASE, INTRIGUE, CORNUCOPIA, DARK AGES, BLACK MARKET");
-
-        dominion.setup();
+        Dominion.Restrictions restrictions = new Dominion.Restrictions(false);
+        Dominion dominion = new Dominion("GUILDS, BASE, INTRIGUE, CORNUCOPIA, DARK AGES, BLACK MARKET", restrictions);
+        
+        try {
+            dominion.setup();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
         System.out.print("NAME");
         String spaces = "";

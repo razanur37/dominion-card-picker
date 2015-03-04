@@ -12,6 +12,7 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import javax.swing.*;
 
 public class DominionGUI {
@@ -33,6 +34,7 @@ public class DominionGUI {
     private JCheckBox stashCheckBox;
     private JCheckBox princeCheckBox;
     private JButton generateButton;
+    private JCheckBox use3_5PotionCheckBox;
 
     private int setsSelected = 0;
 
@@ -42,8 +44,14 @@ public class DominionGUI {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     ++setsSelected;
+                    if (alchemyCheckBox.isSelected() && setsSelected > 1)
+                        use3_5PotionCheckBox.setEnabled(true);
                 } else if (e.getStateChange() == ItemEvent.DESELECTED) {
                     --setsSelected;
+                    if (!alchemyCheckBox.isSelected() || setsSelected <= 1) {
+                        use3_5PotionCheckBox.setSelected(false);
+                        use3_5PotionCheckBox.setEnabled(false);
+                    }
                 }
 
                 if (setsSelected > 0) {
@@ -100,19 +108,38 @@ public class DominionGUI {
                 if (princeCheckBox.isSelected())
                     chosenSets.add("PRINCE");
 
-                Dominion dominion = new Dominion(chosenSets);
+                boolean use3_5Potions = false;
+                if (use3_5PotionCheckBox.isSelected())
+                    use3_5Potions = true;
+                
+                Dominion.Restrictions  restrictions= new Dominion.Restrictions(use3_5Potions);
+                Dominion dominion = new Dominion(chosenSets, restrictions);
 
-                dominion.setup();
+                try {
+                    dominion.setup();
+                } catch (Exception bane) {
+                    JOptionPane.showMessageDialog(panel, "Young Witch has been selected, yet all possible Bane cards from selected sets are already in the game. \nEither generate a new game, make changes to this one, or use a card from a different set as the Bane card.");
+                }
 
                 ArrayList<Card> gameCards = new ArrayList<>(dominion.getCards());
+                Card baneCard = null;
+                if (gameCards.size() == 11) {
+                    baneCard = new Card(gameCards.get(10));
+                    gameCards.remove(10);
+                }
                 Collections.sort(gameCards, Comparator.comparing(Card::getCost).thenComparing(Card::getName));
 
                 String cardsTable = "<table><tr>";
                 
                 for (int i=0; i<gameCards.size(); ++i) {
-                    if (i == 5 || i== 10)
+                    if (i == 5)
                         cardsTable = cardsTable + "</tr><tr>";
                     cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i).getName()) + "</td>";
+                }
+                
+                if (baneCard != null) {
+                    cardsTable = cardsTable + "</tr><tr><td bgcolor=\"rgb(0,255,0)\"><h1><center>Bane Card<center></h1>" + getFile(baneCard.getName())
+                            + "</td>";
                 }
                 
                 cardsTable = cardsTable + "</tr></table>";
