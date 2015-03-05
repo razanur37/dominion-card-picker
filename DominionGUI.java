@@ -35,6 +35,13 @@ public class DominionGUI {
     private JCheckBox princeCheckBox;
     private JButton generateButton;
     private JCheckBox use3_5PotionCheckBox;
+    private JCheckBox noAttacksCheckBox;
+    private JCheckBox requireDefenseCheckbox;
+    private JCheckBox requireBuysCheckBox;
+    private JCheckBox requireTrashingCheckBox;
+    private JCheckBox requireCardDrawCheckBox;
+    private JCheckBox requireExtraActionsCheckBox;
+    private JCheckBox noCursingCheckBox;
 
     private int setsSelected = 0;
 
@@ -46,11 +53,20 @@ public class DominionGUI {
                     ++setsSelected;
                     if (alchemyCheckBox.isSelected() && setsSelected > 1)
                         use3_5PotionCheckBox.setEnabled(true);
+
+                    if (baseCheckBox.isSelected() || seasideCheckBox.isSelected())
+                        requireDefenseCheckbox.setEnabled(true);
+                    
                 } else if (e.getStateChange() == ItemEvent.DESELECTED) {
                     --setsSelected;
                     if (!alchemyCheckBox.isSelected() || setsSelected <= 1) {
                         use3_5PotionCheckBox.setSelected(false);
                         use3_5PotionCheckBox.setEnabled(false);
+                    }
+                    
+                    if (!baseCheckBox.isSelected() && !seasideCheckBox.isSelected()) {
+                        requireDefenseCheckbox.setSelected(false);
+                        requireDefenseCheckbox.setEnabled(false);
                     }
                 }
 
@@ -109,10 +125,41 @@ public class DominionGUI {
                     chosenSets.add("PRINCE");
 
                 boolean use3_5Potions = false;
+                boolean noAttacks = false;
+                boolean noCursing = false;
+                boolean requireDefense = false;
+                boolean requireBuys = false;
+                boolean requireTrashing = false;
+                boolean requireCardDraw = false;
+                boolean requireExtraActions = false;
+                
                 if (use3_5PotionCheckBox.isSelected())
                     use3_5Potions = true;
                 
-                Dominion.Restrictions  restrictions= new Dominion.Restrictions(use3_5Potions);
+                if (noAttacksCheckBox.isSelected())
+                    noAttacks = true;
+
+                if (noCursingCheckBox.isSelected())
+                    noCursing = true;
+                
+                if (requireDefenseCheckbox.isSelected())
+                    requireDefense = true;
+                
+                if (requireBuysCheckBox.isSelected())
+                    requireBuys = true;
+                
+                if (requireTrashingCheckBox.isSelected())
+                    requireTrashing = true;
+                
+                if (requireCardDrawCheckBox.isSelected())
+                    requireCardDraw = true;
+                
+                if (requireExtraActionsCheckBox.isSelected())
+                    requireExtraActions = true;
+                
+                Dominion.Restrictions  restrictions= new Dominion.Restrictions(
+                        use3_5Potions, noAttacks, noCursing, requireDefense, requireBuys,
+                        requireTrashing, requireCardDraw, requireExtraActions);
                 Dominion dominion = new Dominion(chosenSets, restrictions);
 
                 try {

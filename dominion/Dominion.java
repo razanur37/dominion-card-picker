@@ -111,8 +111,71 @@ public class Dominion {
         Random random = new Random();
         boolean needBane = false;
 
+        if (restrictions.isNoAttacks())
+            removeAttacks();
+        
+        if (!restrictions.isNoAttacks() && restrictions.isNoCursing())
+            removeCursing();
+        
         if (restrictions.isUse3_5PotionCards())
             addAlchemyCards();
+        if (restrictions.isRequireBuys()) {
+            boolean buyAlreadySelected = false;
+            
+            for (Card card : gameCards) {
+                if (card.getAttributes().contains("Buys")) {
+                    buyAlreadySelected = true;
+                    break;
+                }                
+            }
+            
+            if (!buyAlreadySelected)
+                addBuy();
+        }
+        if (restrictions.isRequireTrashing()) {
+            boolean trashAlreadySelected = false;
+
+            for (Card card : gameCards) {
+                if (card.getAttributes().contains("Trash")) {
+                    trashAlreadySelected = true;
+                    break;
+                }
+            }
+
+            if (!trashAlreadySelected)
+                addTrashing();
+        }
+        if (restrictions.isRequireCardDraw()) {
+            boolean cardDrawAlreadySelected = false;
+
+            for (Card card : gameCards) {
+                if (card.getAttributes().contains("Cards")) {
+                    cardDrawAlreadySelected = true;
+                    break;
+                }
+            }
+
+            if (!cardDrawAlreadySelected)
+                addCardDraw();
+        }
+
+        if (restrictions.isRequireExtraActions()) {
+            boolean extraActionsAlreadySelected = false;
+
+            for (Card card : gameCards) {
+                if (card.getAttributes().contains("Actions")) {
+                    extraActionsAlreadySelected = true;
+                    break;
+                }
+            }
+
+            if (!extraActionsAlreadySelected)
+                addExtraActions();
+        }
+
+        boolean attackSelected = false;
+        boolean defenseSelected = false;
+        
         while (gameCards.size() != 10) {
             Card chosenCard = cardPool.get(random.nextInt(cardPool.size()));
             gameCards.add(chosenCard);
@@ -120,6 +183,12 @@ public class Dominion {
 
             if (chosenCard.getName().equals("Young Witch"))
                 needBane = true;
+            
+            if (chosenCard.getTypes().contains("Attack"))
+                attackSelected = true;
+            
+            if (chosenCard.getAttributes().contains("Defense"))
+                defenseSelected = true;
         }
 
         if (needBane) {
@@ -131,7 +200,14 @@ public class Dominion {
             }
             baneCard = new Card(baneCandidates.get(random.nextInt(baneCandidates.size())));
 
+            if (baneCard.getAttributes().contains("Defense"))
+                defenseSelected = true;
+
             gameCards.add(baneCard);
+        }
+        
+        if (restrictions.isRequireDefense() && attackSelected && !defenseSelected) {
+            getADefense();
         }
     }
     
@@ -157,6 +233,133 @@ public class Dominion {
         }
     }
     
+    private void addBuy() {
+        ArrayList<Card> allBuys = new ArrayList<>();
+        Card buy;
+
+        Iterator<Card> iterator = cardPool.iterator();
+        while (iterator.hasNext()) {
+
+            Card card = iterator.next();
+            if (card.getAttributes().contains("Buys")) {
+                allBuys.add(card);
+                iterator.remove();
+            }
+        }
+        
+        buy = allBuys.get(new Random().nextInt(allBuys.size()));
+        
+        gameCards.add(new Card(buy));
+    }
+
+    private void addTrashing() {
+        ArrayList<Card> allTrash = new ArrayList<>();
+        Card trash;
+
+        Iterator<Card> iterator = cardPool.iterator();
+        while (iterator.hasNext()) {
+
+            Card card = iterator.next();
+            if (card.getAttributes().contains("Trash")) {
+                allTrash.add(card);
+                iterator.remove();
+            }
+        }
+
+        trash = allTrash.get(new Random().nextInt(allTrash.size()));
+
+        gameCards.add(new Card(trash));
+    }
+    
+    private void addCardDraw() {
+        ArrayList<Card> allCardDraw = new ArrayList<>();
+        Card cardDraw;
+
+        Iterator<Card> iterator = cardPool.iterator();
+        while (iterator.hasNext()) {
+
+            Card card = iterator.next();
+            if (card.getAttributes().contains("Cards")) {
+                allCardDraw.add(card);
+                iterator.remove();
+            }
+        }
+
+        cardDraw = allCardDraw.get(new Random().nextInt(allCardDraw.size()));
+
+        gameCards.add(new Card(cardDraw));
+    }
+
+    private void addExtraActions() {
+        ArrayList<Card> allExtraActions = new ArrayList<>();
+        Card extraActions;
+
+        Iterator<Card> iterator = cardPool.iterator();
+        while (iterator.hasNext()) {
+
+            Card card = iterator.next();
+            if (card.getAttributes().contains("Actions")) {
+                allExtraActions.add(card);
+                iterator.remove();
+            }
+        }
+
+        extraActions = allExtraActions.get(new Random().nextInt(allExtraActions.size()));
+
+        gameCards.add(new Card(extraActions));
+    }
+    
+    private void removeAttacks() {
+        Iterator<Card> iterator = cardPool.iterator();
+        while (iterator.hasNext()) {
+            Card card = iterator.next();
+            if (card.getTypes().contains("Attack")) {
+                iterator.remove();
+            }
+        }
+    }
+    
+    private void removeCursing() {
+        Iterator<Card> iterator = cardPool.iterator();
+        while (iterator.hasNext()) {
+            Card card = iterator.next();
+            if (card.getAttributes().contains("Curse")) {
+                iterator.remove();
+            }
+        }
+    }
+    
+    private void getADefense() {
+        int i = -1;
+        ArrayList<Card> allDefense = new ArrayList<>();
+        Card defense;
+        
+        for (Card card : cardPool) {
+            if (card.getAttributes().contains("Defense"))
+                allDefense.add(card);
+        }
+        
+        defense = allDefense.get(new Random().nextInt(allDefense.size()));
+        
+        for (Card card : gameCards) {
+            if (!card.getTypes().contains("Attack")) {
+                i = gameCards.indexOf(card);
+                break;
+            }
+        }
+        
+        if (i == -1) {
+            if (gameCards.get(0).getName().equals("Young Witch"))
+                i = 1;
+            else
+                i = 0;
+        }
+        
+        cardPool.add(new Card(gameCards.get(i)));
+        gameCards.set(i, defense);
+        cardPool.remove(defense);
+    }
+    
     private ArrayList<Card> getBaneCandidates() {
         ArrayList<Card> baneCandidates = new ArrayList<>();
         
@@ -174,18 +377,80 @@ public class Dominion {
     }
     
     public static class Restrictions {
-       private boolean use3_5PotionCards;
+        private boolean use3_5PotionCards;
+        private boolean noAttacks;
+        private boolean noCursing;
+        private boolean requireDefense;
+        private boolean requireBuys;
+        private boolean requireTrashing;
+        private boolean requireCardDraw;
+        private boolean requireExtraActions;
         
-        public Restrictions(boolean use3_5PotionCards) {
+        public Restrictions () {
+            use3_5PotionCards = false;
+            noAttacks = false;
+            noCursing = false;
+            requireDefense = false;
+            requireBuys = false;
+            requireTrashing = false;
+            requireCardDraw = false;
+            requireExtraActions = false;
+        }
+        
+        public Restrictions(boolean use3_5PotionCards, boolean noAttacks, boolean noCursing, boolean requireDefense,
+                            boolean requireBuys, boolean requireTrashing, boolean requireCardDraw,
+                            boolean requireExtraActions) {
             this.use3_5PotionCards = use3_5PotionCards;
+            this.noAttacks = noAttacks;
+            this.noCursing = noCursing;
+            this.requireDefense = requireDefense;
+            this.requireBuys = requireBuys;
+            this.requireTrashing = requireTrashing;
+            this.requireCardDraw = requireCardDraw;
+            this.requireExtraActions = requireExtraActions;
         }
         
         public Restrictions(Restrictions restrictions) {
-            this.use3_5PotionCards = restrictions.isUse3_5PotionCards();
+            this(restrictions.isUse3_5PotionCards(), 
+                    restrictions.isNoAttacks(),
+                    restrictions.isNoCursing(),
+                    restrictions.isRequireDefense(),
+                    restrictions.isRequireBuys(),
+                    restrictions.isRequireTrashing(),
+                    restrictions.isRequireCardDraw(),
+                    restrictions.isRequireExtraActions());
         }
 
         public boolean isUse3_5PotionCards() {
             return use3_5PotionCards;
+        }
+
+        public boolean isNoAttacks() {
+            return noAttacks;
+        }
+
+        public boolean isNoCursing() {
+            return noCursing;
+        }
+
+        public boolean isRequireDefense() {
+            return requireDefense;
+        }
+
+        public boolean isRequireBuys() {
+            return requireBuys;
+        }
+
+        public boolean isRequireTrashing() {
+            return requireTrashing;
+        }
+
+        public boolean isRequireCardDraw() {
+            return requireCardDraw;
+        }
+
+        public boolean isRequireExtraActions() {
+            return requireExtraActions;
         }
     }
 
