@@ -1,6 +1,4 @@
-/*
- * Copyright (c) 2015. by Casey English
- */
+// Copyright (c) 2015. by Casey English
 
 import dominion.Dominion;
 import dominion.Card;
@@ -12,7 +10,6 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.ConcurrentModificationException;
 import javax.swing.*;
 
 public class DominionGUI {

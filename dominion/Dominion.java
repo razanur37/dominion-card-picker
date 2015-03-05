@@ -69,7 +69,7 @@ public class Dominion {
         Statement stmt;
         try {
             Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:cards.db");
+            c = DriverManager.getConnection("jdbc:sqlite::resource:" + getClass().getResource("/resources/cards.sqlite").toString());
             c.setAutoCommit(false);
 
             for(String set : sets) {
