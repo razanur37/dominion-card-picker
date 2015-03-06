@@ -2,7 +2,6 @@
 
 package dominion;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -333,7 +332,7 @@ public class Dominion {
         int i = -1;
         ArrayList<Card> allDefense = new ArrayList<>();
         Card defense;
-        
+
         for (Card card : cardPool) {
             if (card.getAttributes().contains("Defense"))
                 allDefense.add(card);

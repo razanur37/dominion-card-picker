@@ -1,4 +1,4 @@
-// Copyright (c) 2015. by Casey English
+// Copyright (c) 2015 by Casey English
 
 import dominion.Dominion;
 import dominion.Card;
@@ -41,6 +41,7 @@ public class DominionGUI {
     private JCheckBox noCursingCheckBox;
 
     private int setsSelected = 0;
+    private static final String VERSION = "1.0.1";
 
     public DominionGUI() {
         ItemListener listener = new ItemListener() {
@@ -202,9 +203,38 @@ public class DominionGUI {
 
         JFrame frame = new JFrame("Dominion Card Picker");
         frame.setContentPane(new DominionGUI().panel);
+        addMenus(frame);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private static void addMenus(JFrame frame) {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem aboutItem = new JMenuItem("About");
+
+        menuBar.add(helpMenu);
+        helpMenu.add(aboutItem);
+
+        ActionListener aboutListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String aboutString =
+                        "Dominion Card Picker\n"
+                        + VERSION + "\n"
+                        + "Copyright (c) 2015 by Casey English\n"
+                        + "Licensed under The MIT License\n"
+                        + "Dominion is Copyright (c) by Donald X. Vaccarino and Rio Grande Games\n"
+                        + "This work is neither licensed nor endorsed by Donald X. Vaccarino or Rio Grande Games";
+
+                JOptionPane.showMessageDialog(frame, aboutString, "About Dominion Card Picker", JOptionPane.INFORMATION_MESSAGE);
+            }
+        };
+
+        aboutItem.addActionListener(aboutListener);
+
+        frame.setJMenuBar(menuBar);
     }
 
     private String getFile(String filename) {
