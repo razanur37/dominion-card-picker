@@ -6,6 +6,7 @@ import dominion.Card;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -224,6 +225,8 @@ public class DominionGUI {
         helpMenu.setMnemonic('H');
         helpItem.setMnemonic('H');
         aboutItem.setMnemonic('A');
+
+        helpItem.setAccelerator(KeyStroke.getKeyStroke("F1"));
 
         JEditorPane helpEditorPane = new JEditorPane();
 
