@@ -1,5 +1,5 @@
-# Dominion Card Picker 1.0
-This is a Java-based tool to generate a game of Dominion (LINKTK). You choose which sets you wish use (as well as any promotional cards) and the game will randomly choose 10 cards from those sets to be used for your game. You can also restrict the cards that are chosen with various options (EG requiring no attack cards, or requiring a defense card if an attack has been selected).
+# Dominion Card Picker 1.0.2
+This is a Java-based tool to generate a game of [Dominion](http://riograndegames.com/Game/278-Dominion). You choose which sets you wish use (as well as any promotional cards) and the game will randomly choose 10 cards from those sets to be used for your game. You can also restrict the cards that are chosen with various options (EG requiring no attack cards, or requiring a defense card if an attack has been selected).
 
 # Help
 ## Selecting the Sets to Use
