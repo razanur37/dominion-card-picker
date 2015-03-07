@@ -174,6 +174,13 @@ public class Dominion {
 
         boolean attackSelected = false;
         boolean defenseSelected = false;
+
+        for (Card card : gameCards) {
+            if (card.getTypes().contains("Attack"))
+                attackSelected = true;
+            if (card.getAttributes().contains("Defense"))
+                defenseSelected = true;
+        }
         
         while (gameCards.size() != 10) {
             Card chosenCard = cardPool.get(random.nextInt(cardPool.size()));
@@ -236,13 +243,9 @@ public class Dominion {
         ArrayList<Card> allBuys = new ArrayList<>();
         Card buy;
 
-        Iterator<Card> iterator = cardPool.iterator();
-        while (iterator.hasNext()) {
-
-            Card card = iterator.next();
+        for (Card card : cardPool) {
             if (card.getAttributes().contains("Buys")) {
                 allBuys.add(card);
-                iterator.remove();
             }
         }
         
@@ -255,13 +258,9 @@ public class Dominion {
         ArrayList<Card> allTrash = new ArrayList<>();
         Card trash;
 
-        Iterator<Card> iterator = cardPool.iterator();
-        while (iterator.hasNext()) {
-
-            Card card = iterator.next();
+        for (Card card : cardPool) {
             if (card.getAttributes().contains("Trash")) {
                 allTrash.add(card);
-                iterator.remove();
             }
         }
 
@@ -274,13 +273,9 @@ public class Dominion {
         ArrayList<Card> allCardDraw = new ArrayList<>();
         Card cardDraw;
 
-        Iterator<Card> iterator = cardPool.iterator();
-        while (iterator.hasNext()) {
-
-            Card card = iterator.next();
+        for (Card card : cardPool) {
             if (card.getAttributes().contains("Cards")) {
                 allCardDraw.add(card);
-                iterator.remove();
             }
         }
 
@@ -293,13 +288,9 @@ public class Dominion {
         ArrayList<Card> allExtraActions = new ArrayList<>();
         Card extraActions;
 
-        Iterator<Card> iterator = cardPool.iterator();
-        while (iterator.hasNext()) {
-
-            Card card = iterator.next();
+        for (Card card : cardPool) {
             if (card.getAttributes().contains("Actions")) {
                 allExtraActions.add(card);
-                iterator.remove();
             }
         }
 
@@ -339,19 +330,16 @@ public class Dominion {
         }
         
         defense = allDefense.get(new Random().nextInt(allDefense.size()));
-        
-        for (Card card : gameCards) {
-            if (!card.getTypes().contains("Attack")) {
-                i = gameCards.indexOf(card);
+
+        for (int j = gameCards.size()-1; j>=0; --j) {
+            if (!gameCards.get(j).getTypes().contains("Attack")) {
+                i = j;
                 break;
             }
         }
-        
+
         if (i == -1) {
-            if (gameCards.get(0).getName().equals("Young Witch"))
-                i = 1;
-            else
-                i = 0;
+            i = gameCards.size()-1;
         }
         
         cardPool.add(new Card(gameCards.get(i)));
