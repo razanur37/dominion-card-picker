@@ -175,11 +175,11 @@ public class DominionGUI {
             for (int i=0; i<gameCards.size(); ++i) {
                 if (i == 5)
                     cardsTable = cardsTable + "</tr><tr>";
-                cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i).getName()) + "</td>";
+                cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i)) + "</td>";
             }
 
             if (baneCard != null) {
-                cardsTable = cardsTable + "</tr><tr><td bgcolor=\"rgb(0,255,0)\"><h1><center>Bane Card<center></h1>" + getFile(baneCard.getName())
+                cardsTable = cardsTable + "</tr><tr><td bgcolor=\"rgb(0,255,0)\"><h1><center>Bane Card<center></h1>" + getFile(baneCard)
                         + "</td>";
             }
 
@@ -263,12 +263,12 @@ public class DominionGUI {
         frame.setJMenuBar(menuBar);
     }
 
-    private String getFile(String filename) {
+    private String getFile(Card card) {
         String path;
         try {
-            path = "<img src=\"" + this.getClass().getClassLoader().getResource("img/" + filename.replace(' ', '_') + ".jpg") + "\">";
+            path = "<img src=\"" + this.getClass().getClassLoader().getResource("resources/img/" + card.getSet() + "/" + card.getName().replace(' ', '_') + ".jpg") + "\">";
         } catch (Exception e) {
-            path = filename + ".jpg";
+            path = card + ".jpg";
         }
         return path;
     }
