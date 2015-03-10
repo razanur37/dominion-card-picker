@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## Upcoming
 ### Added
 - Added menu bar, with some options.
+- Added sorting options
 
 ### Changed
 - Changed where card images directory structure to include set.

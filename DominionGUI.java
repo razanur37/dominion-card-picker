@@ -6,7 +6,6 @@ import dominion.Card;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +41,14 @@ public class DominionGUI {
     private JCheckBox noCursingCheckBox;
 
     private int setsSelected = 0;
-    private static final String VERSION = "1.0.1";
+    private static final String VERSION = "1.0.2";
+
+    private ArrayList<Card> gameCards;
+    private Card baneCard;
+
+    private enum SortOption {NAME, COST, SET, SET_COST}
+
+    private static SortOption sortOption = SortOption.NAME;
 
     public DominionGUI() {
         ItemListener listener = e -> {
@@ -162,28 +168,24 @@ public class DominionGUI {
                 JOptionPane.showMessageDialog(panel, "Young Witch has been selected, yet all possible Bane cards from selected sets are already in the game. \nEither generate a new game, make changes to this one, or use a card from a different set as the Bane card.");
             }
 
-            ArrayList<Card> gameCards = new ArrayList<>(dominion.getCards());
-            Card baneCard = null;
+            gameCards = new ArrayList<>(dominion.getCards());
+            baneCard = null;
             if (gameCards.size() == 11) {
                 baneCard = new Card(gameCards.get(10));
                 gameCards.remove(10);
             }
-            Collections.sort(gameCards, Comparator.comparing(Card::getCost).thenComparing(Card::getName));
 
-            String cardsTable = "<table><tr>";
-
-            for (int i=0; i<gameCards.size(); ++i) {
-                if (i == 5)
-                    cardsTable = cardsTable + "</tr><tr>";
-                cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i)) + "</td>";
+            switch (sortOption) {
+                case NAME:
+                    Collections.sort(gameCards, Comparator.comparing(Card::getName));
+                case COST:
+                    Collections.sort(gameCards, Comparator.comparing(Card::getCost).thenComparing(Card::getName));
+                case SET:
+                    Collections.sort(gameCards, Comparator.comparing(Card::getSet).thenComparing(Card::getName));
+                case SET_COST:
+                    Collections.sort(gameCards, Comparator.comparing(Card::getSet).thenComparing(Card::getCost).thenComparing(Card::getName));
             }
-
-            if (baneCard != null) {
-                cardsTable = cardsTable + "</tr><tr><td bgcolor=\"rgb(0,255,0)\"><h1><center>Bane Card<center></h1>" + getFile(baneCard)
-                        + "</td>";
-            }
-
-            cardsTable = cardsTable + "</tr></table>";
+            String cardsTable = generateCardsTable();
 
             cardList.setText(cardsTable);
         });
@@ -207,13 +209,37 @@ public class DominionGUI {
     private static void addMenus(JFrame frame) {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
-        JMenu helpMenu = new JMenu("Help");
         JMenuItem exitItem = new JMenuItem("Exit");
+
+        JMenu optionsMenu = new JMenu("Options");
+        JMenu sortByMenu = new JMenu("Sort By");
+        JCheckBoxMenuItem sortByNameItem = new JCheckBoxMenuItem("Name");
+        JCheckBoxMenuItem sortByCostItem = new JCheckBoxMenuItem("Cost, then Name");
+        JCheckBoxMenuItem sortBySetItem = new JCheckBoxMenuItem("Set, then Name");
+        JCheckBoxMenuItem sortBySetCostItem = new JCheckBoxMenuItem("Set, then Cost, then Name");
+
+        JMenu helpMenu = new JMenu("Help");
         JMenuItem helpItem= new JMenuItem("Help");
         JMenuItem aboutItem = new JMenuItem("About");
 
         menuBar.add(fileMenu);
         fileMenu.add(exitItem);
+
+        ButtonGroup sortGroup = new ButtonGroup();
+
+        sortByNameItem.setSelected(true);
+
+        sortGroup.add(sortByNameItem);
+        sortGroup.add(sortByCostItem);
+        sortGroup.add(sortBySetItem);
+        sortGroup.add(sortBySetCostItem);
+
+        menuBar.add(optionsMenu);
+        sortByMenu.add(sortByNameItem);
+        sortByMenu.add(sortByCostItem);
+        sortByMenu.add(sortBySetItem);
+        sortByMenu.add(sortBySetCostItem);
+        optionsMenu.add(sortByMenu);
 
         menuBar.add(helpMenu);
         helpMenu.add(helpItem);
@@ -244,6 +270,22 @@ public class DominionGUI {
 
         helpScrollPane.setPreferredSize(new Dimension(800, 600));
 
+        ItemListener listener = e -> {
+            if (sortByNameItem.isSelected())
+                sortOption = SortOption.NAME;
+            else if (sortByCostItem.isSelected())
+                sortOption = SortOption.COST;
+            else if (sortBySetItem.isSelected())
+                sortOption = SortOption.SET;
+            else
+                sortOption = SortOption.SET_COST;
+        };
+
+        sortByNameItem.addItemListener(listener);
+        sortByCostItem.addItemListener(listener);
+        sortBySetItem.addItemListener(listener);
+        sortBySetCostItem.addItemListener(listener);
+
         exitItem.addActionListener(e -> System.exit(0));
 
         helpItem.addActionListener(e -> JOptionPane.showMessageDialog(null, helpScrollPane, "Help", JOptionPane.PLAIN_MESSAGE));
@@ -261,6 +303,25 @@ public class DominionGUI {
         });
 
         frame.setJMenuBar(menuBar);
+    }
+
+    private String generateCardsTable() {
+        String cardsTable = "<table><tr>";
+
+        for (int i=0; i<gameCards.size(); ++i) {
+            if (i == 5)
+                cardsTable = cardsTable + "</tr><tr>";
+            cardsTable = cardsTable + "<td>" + getFile(gameCards.get(i)) + "</td>";
+        }
+
+        if (baneCard != null) {
+            cardsTable = cardsTable + "</tr><tr><td bgcolor=\"rgb(0,255,0)\"><h1 style=\"font:sans-serif;font-size:1.25em;font-weight:bold\"><center>Bane Card<center></h1>" + getFile(baneCard)
+                    + "</td>";
+        }
+
+        cardsTable = cardsTable + "</tr></table>";
+
+        return cardsTable;
     }
 
     private String getFile(Card card) {

@@ -111,10 +111,10 @@ public class Dominion {
         boolean needBane = false;
 
         if (restrictions.isNoAttacks())
-            removeAttacks();
+            removeCardsByType("Attack");
         
         if (!restrictions.isNoAttacks() && restrictions.isNoCursing())
-            removeCursing();
+            removeCardsByAttribute("Curse");
         
         if (restrictions.isUse3_5PotionCards())
             addAlchemyCards();
@@ -129,7 +129,7 @@ public class Dominion {
             }
             
             if (!buyAlreadySelected)
-                addBuy();
+                addCardsByAttribute("Buys");
         }
         if (restrictions.isRequireTrashing()) {
             boolean trashAlreadySelected = false;
@@ -142,7 +142,7 @@ public class Dominion {
             }
 
             if (!trashAlreadySelected)
-                addTrashing();
+                addCardsByAttribute("Trash");
         }
         if (restrictions.isRequireCardDraw()) {
             boolean cardDrawAlreadySelected = false;
@@ -155,7 +155,7 @@ public class Dominion {
             }
 
             if (!cardDrawAlreadySelected)
-                addCardDraw();
+                addCardsByAttribute("Cards");
         }
 
         if (restrictions.isRequireExtraActions()) {
@@ -169,7 +169,7 @@ public class Dominion {
             }
 
             if (!extraActionsAlreadySelected)
-                addExtraActions();
+                addCardsByAttribute("Actions");
         }
 
         boolean attackSelected = false;
@@ -238,82 +238,37 @@ public class Dominion {
             allAlchemy.remove(card);
         }
     }
-    
-    private void addBuy() {
+
+    private void addCardsByAttribute(String attribute) {
         ArrayList<Card> allBuys = new ArrayList<>();
         Card buy;
 
         for (Card card : cardPool) {
-            if (card.getAttributes().contains("Buys")) {
+            if (card.getAttributes().contains(attribute)) {
                 allBuys.add(card);
             }
         }
-        
+
         buy = allBuys.get(new Random().nextInt(allBuys.size()));
-        
+
         gameCards.add(new Card(buy));
     }
 
-    private void addTrashing() {
-        ArrayList<Card> allTrash = new ArrayList<>();
-        Card trash;
-
-        for (Card card : cardPool) {
-            if (card.getAttributes().contains("Trash")) {
-                allTrash.add(card);
-            }
-        }
-
-        trash = allTrash.get(new Random().nextInt(allTrash.size()));
-
-        gameCards.add(new Card(trash));
-    }
-    
-    private void addCardDraw() {
-        ArrayList<Card> allCardDraw = new ArrayList<>();
-        Card cardDraw;
-
-        for (Card card : cardPool) {
-            if (card.getAttributes().contains("Cards")) {
-                allCardDraw.add(card);
-            }
-        }
-
-        cardDraw = allCardDraw.get(new Random().nextInt(allCardDraw.size()));
-
-        gameCards.add(new Card(cardDraw));
-    }
-
-    private void addExtraActions() {
-        ArrayList<Card> allExtraActions = new ArrayList<>();
-        Card extraActions;
-
-        for (Card card : cardPool) {
-            if (card.getAttributes().contains("Actions")) {
-                allExtraActions.add(card);
-            }
-        }
-
-        extraActions = allExtraActions.get(new Random().nextInt(allExtraActions.size()));
-
-        gameCards.add(new Card(extraActions));
-    }
-    
-    private void removeAttacks() {
+    private void removeCardsByType(String type) {
         Iterator<Card> iterator = cardPool.iterator();
         while (iterator.hasNext()) {
             Card card = iterator.next();
-            if (card.getTypes().contains("Attack")) {
+            if (card.getTypes().contains(type)) {
                 iterator.remove();
             }
         }
     }
-    
-    private void removeCursing() {
+
+    private void removeCardsByAttribute(String attribute) {
         Iterator<Card> iterator = cardPool.iterator();
         while (iterator.hasNext()) {
             Card card = iterator.next();
-            if (card.getAttributes().contains("Curse")) {
+            if (card.getTypes().contains(attribute)) {
                 iterator.remove();
             }
         }
