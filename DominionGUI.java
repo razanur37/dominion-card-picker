@@ -282,11 +282,10 @@ public class DominionGUI {
             else
                 sortOption = SortOption.SET_COST;
 
-            if (gameCards.size() != 10);
-            sort();
-
-
-            cardList.setText(generateCardsTable());
+            if (gameCards != null && gameCards.size() == 10) {
+                sort();
+                cardList.setText(generateCardsTable());
+            }
         };
 
         sortByNameItem.addItemListener(listener);
