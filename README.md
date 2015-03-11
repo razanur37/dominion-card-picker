@@ -1,6 +1,9 @@
 # Dominion Card Picker 1.0.2
 This is a Java-based tool to generate a game of [Dominion](http://riograndegames.com/Game/278-Dominion). You choose which sets you wish use (as well as any promotional cards) and the game will randomly choose 10 cards from those sets to be used for your game. You can also restrict the cards that are chosen with various options (EG requiring no attack cards, or requiring a defense card if an attack has been selected).
 
+# Usage
+This tool requires at least Java Runtime Environment (JRE) 8. If you do not have JRE 8, you can obtain it from [Oracle](https://java.com/en/download/).
+
 # Help
 ## Selecting the Sets to Use
 To select which sets you want the program to choose from, simply check the box next to each set name. If you want to use any of the promotional cards, just check the boxes next to their names. At least 1 set must be selected.
@@ -17,8 +20,10 @@ Note that this option will be disabled unless you select another set <i>in addit
 If selected, the generated game will not have any cards that have the `Attack` type.
 
 ### No Cursing
-If selected, the generated game will not contain any cards which causes players to gain curses.
-Note that this does not include cards which will only give players a curse in certain circustances.
+If selected, the generated game will not contain any cards which causes players to gain Curses.
+
+Note that this will only exclude cards which explicitly say "gain a Curse".
+There are some cards that, when used in a very specific way, can cause other players to gain Curses (such as Ambassador from the Seaside expansion). These cards will not be excluded and may still be selected for a game, even with this option selected.
 
 ### Require Buys
 If selected, the generated game will include at least 1 card that grants an additional buy.
@@ -30,15 +35,18 @@ Note that this may include cards that will not always let you draw cards
 
 ### Require Defense
 If selected, the generated game will contain at least 1 card that can prevent an attack from affecting the player, provided the game contains at least 1 attack.
+
 Note that there are only 2 cards that completely negate attacks, Moat from the Base game and Lighthouse from Seaside. In order for this option to be selected, at least 1 of those sets (Base or Seaside) must be selected.
 
 ### Require Extra Actions
 If selected, the generated game will have at least 1 card in it that supplies 2 or more actions.
+
 Note that this may include cards that will not always give extra actions. For example, the Intrigue card Governor gives the player the choice between gaining 3 cards or 2 actions. Because it is at least <i>possible</i> for Governor to give extra actions is considered to give extra actions by the program.
 Additionally the Seaside card Tactician gives the player a single action on their next turn if they used it to discard any cards on their current turn. Because the player won't need to spend an action in order to play Tactician on their next turn, the program considers it to give extra actions, despite it only giving 1.
 
 ### Require Trashing
 If selected, the generate game will have at least 1 card that allows the player to trash <i>another</i> card.
+
 Note that this does not include cards that only trash themselves.
 Note that this includes cards which may not always allow the player to trash another card.
 

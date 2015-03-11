@@ -14,6 +14,7 @@ import javax.swing.*;
 
 public class DominionGUI {
     private JPanel panel;
+    private static JFrame frame;
     private JCheckBox baseCheckBox;
     private JCheckBox intrigueCheckBox;
     private JCheckBox seasideCheckBox;
@@ -43,22 +44,29 @@ public class DominionGUI {
     private int setsSelected = 0;
     private static final String VERSION = "1.0.2";
 
-    private ArrayList<Card> gameCards;
-    private Card baneCard;
+    private static ArrayList<Card> gameCards;
+    private static Card baneCard;
 
     private enum SortOption {NAME, COST, SET, SET_COST}
 
     private static SortOption sortOption = SortOption.NAME;
 
     public DominionGUI() {
+        addMenus();
         ItemListener listener = e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 ++setsSelected;
-                if (alchemyCheckBox.isSelected() && setsSelected > 1)
+                if (alchemyCheckBox.isSelected() && setsSelected > 1) {
                     use3_5PotionCheckBox.setEnabled(true);
+                }
 
                 if (baseCheckBox.isSelected() || seasideCheckBox.isSelected())
                     requireDefenseCheckbox.setEnabled(true);
+
+                if (noAttacksCheckBox.isSelected()) {
+                    noCursingCheckBox.setSelected(false);
+                    noCursingCheckBox.setEnabled(false);
+                }
 
             } else if (e.getStateChange() == ItemEvent.DESELECTED) {
                 --setsSelected;
@@ -70,6 +78,10 @@ public class DominionGUI {
                 if (!baseCheckBox.isSelected() && !seasideCheckBox.isSelected()) {
                     requireDefenseCheckbox.setSelected(false);
                     requireDefenseCheckbox.setEnabled(false);
+                }
+
+                if (!noAttacksCheckBox.isSelected()) {
+                    noCursingCheckBox.setEnabled(true);
                 }
             }
 
@@ -90,6 +102,7 @@ public class DominionGUI {
         hinterlandsCheckBox.addItemListener(listener);
         darkAgesCheckBox.addItemListener(listener);
         guildsCheckBox.addItemListener(listener);
+        noAttacksCheckBox.addItemListener(listener);
         generateButton.addActionListener(e -> {
             ArrayList<String> chosenSets = new ArrayList<>();
 
@@ -165,7 +178,7 @@ public class DominionGUI {
             try {
                 dominion.setup();
             } catch (Exception bane) {
-                JOptionPane.showMessageDialog(panel, "Young Witch has been selected, yet all possible Bane cards from selected sets are already in the game. \nEither generate a new game, make changes to this one, or use a card from a different set as the Bane card.");
+                JOptionPane.showMessageDialog(panel, "Young Witch has been selected, yet all possible Bane cards from selected sets are already in the game. \nEither generate a new game, make changes to this one, or use a card from a different set as the Bane card.","Warning", JOptionPane.WARNING_MESSAGE);
             }
 
             gameCards = new ArrayList<>(dominion.getCards());
@@ -175,19 +188,9 @@ public class DominionGUI {
                 gameCards.remove(10);
             }
 
-            switch (sortOption) {
-                case NAME:
-                    Collections.sort(gameCards, Comparator.comparing(Card::getName));
-                case COST:
-                    Collections.sort(gameCards, Comparator.comparing(Card::getCost).thenComparing(Card::getName));
-                case SET:
-                    Collections.sort(gameCards, Comparator.comparing(Card::getSet).thenComparing(Card::getName));
-                case SET_COST:
-                    Collections.sort(gameCards, Comparator.comparing(Card::getSet).thenComparing(Card::getCost).thenComparing(Card::getName));
-            }
-            String cardsTable = generateCardsTable();
+            sort();
 
-            cardList.setText(cardsTable);
+            cardList.setText(generateCardsTable());
         });
     }
 
@@ -198,15 +201,14 @@ public class DominionGUI {
             System.exit(1);
         }
 
-        JFrame frame = new JFrame("Dominion Card Picker");
+        frame = new JFrame("Dominion Card Picker");
         frame.setContentPane(new DominionGUI().panel);
-        addMenus(frame);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
 
-    private static void addMenus(JFrame frame) {
+    private void addMenus() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenuItem exitItem = new JMenuItem("Exit");
@@ -279,6 +281,12 @@ public class DominionGUI {
                 sortOption = SortOption.SET;
             else
                 sortOption = SortOption.SET_COST;
+
+            if (gameCards.size() != 10);
+            sort();
+
+
+            cardList.setText(generateCardsTable());
         };
 
         sortByNameItem.addItemListener(listener);
@@ -305,6 +313,23 @@ public class DominionGUI {
         frame.setJMenuBar(menuBar);
     }
 
+    private void sort() {
+        switch (sortOption) {
+            case NAME:
+                Collections.sort(gameCards, Comparator.comparing(Card::getName));
+                break;
+            case COST:
+                Collections.sort(gameCards, Comparator.comparing(Card::getCost).thenComparing(Card::getName));
+                break;
+            case SET:
+                Collections.sort(gameCards, Comparator.comparing(Card::getSet).thenComparing(Card::getName));
+                break;
+            case SET_COST:
+                Collections.sort(gameCards, Comparator.comparing(Card::getSet).thenComparing(Card::getCost).thenComparing(Card::getName));
+                break;
+        }
+    }
+
     private String generateCardsTable() {
         String cardsTable = "<table><tr>";
 
@@ -327,7 +352,7 @@ public class DominionGUI {
     private String getFile(Card card) {
         String path;
         try {
-            path = "<img src=\"" + this.getClass().getClassLoader().getResource("resources/img/" + card.getSet() + "/" + card.getName().replace(' ', '_') + ".jpg") + "\">";
+            path = "<img src=\"" + DominionGUI.class.getClassLoader().getResource("resources/img/" + card.getSet() + "/" + card.getName().replace(' ', '_') + ".jpg") + "\">";
         } catch (Exception e) {
             path = card + ".jpg";
         }

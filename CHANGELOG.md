@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## Upcoming
 ### Added
 - Added menu bar, with some options.
-- Added sorting options
+- Added sorting options, changing sorting option after game has been generated will resort the game according to the new sorting selection.
 
 ### Changed
 - Changed where card images directory structure to include set.
