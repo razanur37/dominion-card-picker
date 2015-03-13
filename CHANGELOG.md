@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Changed where card images directory structure to include set.
+- Changed the `Require Card Draw` option to put a card that gives at least +2 cards in the game, as opposed to +1 before.
+
+### Fixed
+- Fixed bug where a card chosen to fulfil a `Require X` option would not be removed from the global card pool, thus enabling it to be chosen twice for the same game.
 
 ## [1.0.2] - 7-March-2015
 ### Fixed

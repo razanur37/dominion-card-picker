@@ -19,6 +19,8 @@ Note that this option will be disabled unless you select another set <i>in addit
 ### No Attacks
 If selected, the generated game will not have any cards that have the `Attack` type.
 
+Selecting this will disable the `No Cursing` and `Require Defense` options.
+
 ### No Cursing
 If selected, the generated game will not contain any cards which causes players to gain Curses.
 
@@ -30,8 +32,8 @@ If selected, the generated game will include at least 1 card that grants an addi
 Note that this may include cards that will not always give an extra buy.
 
 ### Require Card Draw
-If selected, the generated game will include at least 1 card that lets the player draw cards.
-Note that this may include cards that will not always let you draw cards
+If selected, the generated game will include at least 1 card that lets the player draw 2 or more cards.
+Note that this may include cards that will not always let you draw 2 or more cards
 
 ### Require Defense
 If selected, the generated game will contain at least 1 card that can prevent an attack from affecting the player, provided the game contains at least 1 attack.
@@ -56,6 +58,7 @@ To generate the game, simply press `Generate` after selecting your set(s) and re
 Be aware that the Cornucopia card Young Witch requires the game contain an 11th Kingdom card stack. If the program chooses Young Witch to be used in the game, it will also automatically select the 11th stack (or Bane card stack). This card will be labeled as the Bane card and will appear below the other cards.
 Because Young Witch requires the Bane stack be a card that costs either 2 or 3, it is possible (especially if Cornucopia is the only set being used) for Young Witch to be in the game along with all 2 and 3 cost cards from the selected set(s). If this happens, the program will issue a warning, letting you know of the issue.
 There are 3 options to rectify the issue:
+
 - Regenerate the game, possibly adding additional sets to prevent the issue from reoccurring.
 - Designate one of the 2 or 3 cost cards in the game as the Bane card and replace it with another card from the selected set(s) that is not in the game.
 - If sets are available beyond the ones chosen, pick a card from a different set to act as the Bane card.

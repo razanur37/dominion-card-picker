@@ -42,33 +42,46 @@ public class DominionGUI {
     private JCheckBox noCursingCheckBox;
 
     private int setsSelected = 0;
-    private static final String VERSION = "1.0.2";
+    private final String VERSION = "1.0.2";
 
-    private static ArrayList<Card> gameCards;
-    private static Card baneCard;
+    private ArrayList<Card> gameCards;
+    private Card baneCard;
 
     private enum SortOption {NAME, COST, SET, SET_COST}
 
-    private static SortOption sortOption = SortOption.NAME;
+    private SortOption sortOption = SortOption.NAME;
 
     public DominionGUI() {
         addMenus();
         ItemListener listener = e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
+                // Keep track of the number of sets being used.
                 ++setsSelected;
+
+                // If Alchemy and at least one other set are being used, allow
+                // the 3-5 Potion Requirement to be selected.
                 if (alchemyCheckBox.isSelected() && setsSelected > 1) {
                     use3_5PotionCheckBox.setEnabled(true);
                 }
 
+                // Currently only Base and Seaside have defenses, so make sure
+                // one of them is in use before allowing Defenses to be required.
                 if (baseCheckBox.isSelected() || seasideCheckBox.isSelected())
                     requireDefenseCheckbox.setEnabled(true);
 
+                // If Attacks aren't being used, then there's no reason to let
+                // the user disable Curses as well (all cursers are Attacks).
+                // There's also no reason to let the user require a defense if
+                // there's no possibility of an Attack being selected.
                 if (noAttacksCheckBox.isSelected()) {
                     noCursingCheckBox.setSelected(false);
                     noCursingCheckBox.setEnabled(false);
+                    requireDefenseCheckbox.setSelected(false);
+                    requireDefenseCheckbox.setEnabled(false);
                 }
 
             } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+                // These just undo what was done above.
                 --setsSelected;
                 if (!alchemyCheckBox.isSelected() || setsSelected <= 1) {
                     use3_5PotionCheckBox.setSelected(false);
@@ -82,9 +95,12 @@ public class DominionGUI {
 
                 if (!noAttacksCheckBox.isSelected()) {
                     noCursingCheckBox.setEnabled(true);
+                    requireDefenseCheckbox.setEnabled(true);
                 }
             }
 
+            // If at least one set is being used, allow the user to generate
+            // the game.
             if (setsSelected > 0) {
                 generateButton.setEnabled(true);
             } else {
@@ -103,9 +119,11 @@ public class DominionGUI {
         darkAgesCheckBox.addItemListener(listener);
         guildsCheckBox.addItemListener(listener);
         noAttacksCheckBox.addItemListener(listener);
+
         generateButton.addActionListener(e -> {
             ArrayList<String> chosenSets = new ArrayList<>();
 
+            // Create the list of sets to use.
             if (baseCheckBox.isSelected())
                 chosenSets.add("BASE");
             if (intrigueCheckBox.isSelected())
@@ -146,6 +164,7 @@ public class DominionGUI {
             boolean requireCardDraw = false;
             boolean requireExtraActions = false;
 
+            // Check our restrictions and set accordingly.
             if (use3_5PotionCheckBox.isSelected())
                 use3_5Potions = true;
 
@@ -170,17 +189,27 @@ public class DominionGUI {
             if (requireExtraActionsCheckBox.isSelected())
                 requireExtraActions = true;
 
+            // Package the restrictions together.
             Dominion.Restrictions  restrictions= new Dominion.Restrictions(
                     use3_5Potions, noAttacks, noCursing, requireDefense, requireBuys,
                     requireTrashing, requireCardDraw, requireExtraActions);
+
+            // Create the game.
             Dominion dominion = new Dominion(chosenSets, restrictions);
 
+            // Setup the game. Throw a warning message if Young Witch is in the
+            // game but no Bane card could be chosen.
             try {
                 dominion.setup();
             } catch (Exception bane) {
-                JOptionPane.showMessageDialog(panel, "Young Witch has been selected, yet all possible Bane cards from selected sets are already in the game. \nEither generate a new game, make changes to this one, or use a card from a different set as the Bane card.","Warning", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(panel, "Young Witch has been" +
+                        "selected, yet all possible Bane cards from selected" +
+                        "sets are already in the game. \nEither generate a" +
+                        "new game, make changes to this one, or use a card" +
+                        "from a different set as the Bane card.","Warning", JOptionPane.WARNING_MESSAGE);
             }
 
+            // Get the card list and the Bane Card (if it exists).
             gameCards = new ArrayList<>(dominion.getCards());
             baneCard = null;
             if (gameCards.size() == 11) {
@@ -188,8 +217,10 @@ public class DominionGUI {
                 gameCards.remove(10);
             }
 
+            // Sort the list according to user preference.
             sort();
 
+            // Display the cards chosen for the game.
             cardList.setText(generateCardsTable());
         });
     }
@@ -282,6 +313,8 @@ public class DominionGUI {
             else
                 sortOption = SortOption.SET_COST;
 
+            // If the game has already been generated, resort the current game
+            // according to the new choice.
             if (gameCards != null && gameCards.size() == 10) {
                 sort();
                 cardList.setText(generateCardsTable());
@@ -313,6 +346,7 @@ public class DominionGUI {
     }
 
     private void sort() {
+        // Sort the cards based on the user's choice in the menu.
         switch (sortOption) {
             case NAME:
                 Collections.sort(gameCards, Comparator.comparing(Card::getName));
@@ -329,6 +363,7 @@ public class DominionGUI {
         }
     }
 
+    // Create an HTML table to display images of all the cards in the game.
     private String generateCardsTable() {
         String cardsTable = "<table><tr>";
 
@@ -348,6 +383,8 @@ public class DominionGUI {
         return cardsTable;
     }
 
+    // Converts the name of the given card into the format used in the 'img'
+    // folder
     private String getFile(Card card) {
         String path;
         try {

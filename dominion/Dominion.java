@@ -33,6 +33,8 @@ public class Dominion {
     public Dominion(ArrayList<String> sets, Restrictions restrictions) {
         this.sets = new ArrayList<>();
 
+        // Make sure the sets (or promo cards) that were entered in are
+        // legitimate Dominion sets or promos.
         try {
             for (String singleChosenSet: sets) {
                 if (!ALL_SETS.contains(singleChosenSet.toUpperCase()) &&
@@ -40,6 +42,7 @@ public class Dominion {
                     throw new IllegalArgumentException("Set " + singleChosenSet + "is not a valid Dominion set");
                 }
 
+                // Tag promo cards as such so that they can be retrieved from the database
                 String set = PROMOS.contains(singleChosenSet) ? "PROMO-"+properCase(singleChosenSet) : singleChosenSet;
 
                 this.sets.add(set);
@@ -61,6 +64,8 @@ public class Dominion {
         this(new ArrayList<>(Arrays.asList(sets.split(", "))), restrictions);
     }
 
+    // Pull all cards from every set being used in this game, plus any promo
+    // cards being used, from the database.
     private ArrayList<Card> getCardPool() {
         ArrayList<Card> cards = new ArrayList<>();
 
@@ -104,12 +109,15 @@ public class Dominion {
         return cards;
     }
 
+    // Choose the Kingdom cards to be used for the game.
     public void setup() throws Exception {
         gameCards = new ArrayList<>();
 
         Random random = new Random();
         boolean needBane = false;
 
+        // Check all the possible restrictions, then remove any banned cards,
+        // then add cards with desired attributes.
         if (restrictions.isNoAttacks())
             removeCardsByType("Attack");
         
@@ -175,13 +183,17 @@ public class Dominion {
         boolean attackSelected = false;
         boolean defenseSelected = false;
 
+        // Check to see if an attack or a defense have already been added via
+        // the above methods.
         for (Card card : gameCards) {
             if (card.getTypes().contains("Attack"))
                 attackSelected = true;
             if (card.getAttributes().contains("Defense"))
                 defenseSelected = true;
         }
-        
+
+        // Fill out the remaining slots for the game with cards randomly
+        // selected from the remaining card pool.
         while (gameCards.size() != 10) {
             Card chosenCard = cardPool.get(random.nextInt(cardPool.size()));
             gameCards.add(chosenCard);
@@ -197,6 +209,7 @@ public class Dominion {
                 defenseSelected = true;
         }
 
+        // If Young Witch was chosen, an 11th stack is needed, so choose it.
         if (needBane) {
             Card baneCard;
 
@@ -211,12 +224,16 @@ public class Dominion {
 
             gameCards.add(baneCard);
         }
-        
+
+        // If we are supposed to have a defense and didn't choose one, replace
+        // a chosen (non-attack) card with a defense.
         if (restrictions.isRequireDefense() && attackSelected && !defenseSelected) {
             getADefense();
         }
     }
-    
+
+    // Add 3-5 cards from the Alchemy set to the game, removing all others from
+    // the card pool so that no other Alchemy cards can be chosen.
     private void addAlchemyCards() {
         ArrayList<Card> allAlchemy = new ArrayList<>();
         Random random = new Random();
@@ -239,21 +256,27 @@ public class Dominion {
         }
     }
 
+    // Add a single card from the card pool that has the given attribute, then
+    // remove it from the card pool.
     private void addCardsByAttribute(String attribute) {
-        ArrayList<Card> allBuys = new ArrayList<>();
-        Card buy;
+        ArrayList<Card> allDesiredCards = new ArrayList<>();
+
+        Card desiredCard;
 
         for (Card card : cardPool) {
             if (card.getAttributes().contains(attribute)) {
-                allBuys.add(card);
+                allDesiredCards.add(card);
             }
         }
 
-        buy = allBuys.get(new Random().nextInt(allBuys.size()));
+        desiredCard = allDesiredCards.get(new Random().nextInt(allDesiredCards.size()));
 
-        gameCards.add(new Card(buy));
+        cardPool.remove(desiredCard);
+
+        gameCards.add(new Card(desiredCard));
     }
 
+    // Remove all cards that contain the specified type from the card pool.
     private void removeCardsByType(String type) {
         Iterator<Card> iterator = cardPool.iterator();
         while (iterator.hasNext()) {
@@ -264,6 +287,7 @@ public class Dominion {
         }
     }
 
+    // Remove all cards with the specified attribute from the card pool.
     private void removeCardsByAttribute(String attribute) {
         Iterator<Card> iterator = cardPool.iterator();
         while (iterator.hasNext()) {
@@ -273,7 +297,8 @@ public class Dominion {
             }
         }
     }
-    
+
+    // Pick a defense card, then pick a non-attack card to replace with the defense.
     private void getADefense() {
         int i = -1;
         ArrayList<Card> allDefense = new ArrayList<>();
@@ -286,6 +311,8 @@ public class Dominion {
         
         defense = allDefense.get(new Random().nextInt(allDefense.size()));
 
+        // Start at the back of the list to make sure no cards that were added
+        // because of restrictions are replaced.
         for (int j = gameCards.size()-1; j>=0; --j) {
             if (!gameCards.get(j).getTypes().contains("Attack")) {
                 i = j;
@@ -293,6 +320,10 @@ public class Dominion {
             }
         }
 
+        // If all cards in the game are attacks, simply replace the very last
+        // one in the list. This guarantees that restrictions are not violated.
+        // Additionally, this guarantees that Young Witch (should it be in the
+        // game), cannot be replaced.
         if (i == -1) {
             i = gameCards.size()-1;
         }
@@ -301,7 +332,9 @@ public class Dominion {
         gameCards.set(i, defense);
         cardPool.remove(defense);
     }
-    
+
+    // Pick out all the possible cards that can fill the 'Bane card' role
+    // (cost 2 or 3).
     private ArrayList<Card> getBaneCandidates() {
         ArrayList<Card> baneCandidates = new ArrayList<>();
         
@@ -317,7 +350,8 @@ public class Dominion {
     public ArrayList<Card> getCards() {
         return gameCards;
     }
-    
+
+    // Keeps track of all restrictions for the game.
     public static class Restrictions {
         private boolean use3_5PotionCards;
         private boolean noAttacks;
