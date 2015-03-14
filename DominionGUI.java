@@ -2,7 +2,6 @@
 
 import dominion.Dominion;
 import dominion.Card;
-import sun.plugin2.message.JavaScriptEvalMessage;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
