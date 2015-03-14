@@ -88,7 +88,7 @@ public class Dominion {
                     String attrs = rs.getString("attributes");
                     ArrayList<String> attributes;
                     if (attrs != null) {
-                        attributes = new ArrayList<>(Arrays.asList(rs.getString("attributes").split(", ")));
+                        attributes = new ArrayList<>(Arrays.asList(attrs.split(", ")));
                     } else {
                         attributes = new ArrayList<>();
                     }

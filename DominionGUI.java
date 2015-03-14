@@ -2,6 +2,7 @@
 
 import dominion.Dominion;
 import dominion.Card;
+import sun.plugin2.message.JavaScriptEvalMessage;
 
 import java.awt.*;
 import java.awt.event.ItemEvent;
@@ -50,6 +51,7 @@ public class DominionGUI {
     private enum SortOption {NAME, COST, SET, SET_COST}
 
     private SortOption sortOption = SortOption.NAME;
+    private boolean imagesOn = true;
 
     public DominionGUI() {
         addMenus();
@@ -221,7 +223,7 @@ public class DominionGUI {
             sort();
 
             // Display the cards chosen for the game.
-            cardList.setText(generateCardsTable());
+            cardList.setText(imagesOn ? generateImageCardsTable() : generateTextCardsTable());
         });
     }
 
@@ -244,6 +246,9 @@ public class DominionGUI {
         JMenu fileMenu = new JMenu("File");
         JMenuItem exitItem = new JMenuItem("Exit");
 
+        JMenu viewMenu = new JMenu("View");
+        JCheckBoxMenuItem viewImages = new JCheckBoxMenuItem("Display Card Images");
+
         JMenu optionsMenu = new JMenu("Options");
         JMenu sortByMenu = new JMenu("Sort By");
         JCheckBoxMenuItem sortByNameItem = new JCheckBoxMenuItem("Name");
@@ -257,6 +262,10 @@ public class DominionGUI {
 
         menuBar.add(fileMenu);
         fileMenu.add(exitItem);
+
+        menuBar.add(viewMenu);
+        viewImages.setSelected(true);
+        viewMenu.add(viewImages);
 
         ButtonGroup sortGroup = new ButtonGroup();
 
@@ -281,6 +290,16 @@ public class DominionGUI {
         fileMenu.setMnemonic('F');
         exitItem.setMnemonic('X');
 
+        viewMenu.setMnemonic('V');
+        viewImages.setMnemonic('I');
+
+        optionsMenu.setMnemonic('O');
+        sortByMenu.setMnemonic('S');
+        sortByNameItem.setMnemonic('N');
+        sortByCostItem.setMnemonic('C');
+        sortBySetItem.setMnemonic('S');
+        sortBySetCostItem.setMnemonic('E');
+
         helpMenu.setMnemonic('H');
         helpItem.setMnemonic('H');
         aboutItem.setMnemonic('A');
@@ -303,6 +322,12 @@ public class DominionGUI {
 
         helpScrollPane.setPreferredSize(new Dimension(800, 600));
 
+        viewImages.addItemListener(e -> {
+            imagesOn = !imagesOn;
+            if (gameCards != null && gameCards.size() == 10)
+                cardList.setText(imagesOn ? generateImageCardsTable() : generateTextCardsTable());
+        });
+
         ItemListener listener = e -> {
             if (sortByNameItem.isSelected())
                 sortOption = SortOption.NAME;
@@ -317,7 +342,7 @@ public class DominionGUI {
             // according to the new choice.
             if (gameCards != null && gameCards.size() == 10) {
                 sort();
-                cardList.setText(generateCardsTable());
+                cardList.setText(imagesOn ? generateImageCardsTable() : generateTextCardsTable());
             }
         };
 
@@ -364,8 +389,9 @@ public class DominionGUI {
     }
 
     // Create an HTML table to display images of all the cards in the game.
-    private String generateCardsTable() {
-        String cardsTable = "<table><tr>";
+    private String generateImageCardsTable() {
+        String cardsTable = "<table>";
+        cardsTable = cardsTable + "<tr>";
 
         for (int i=0; i<gameCards.size(); ++i) {
             if (i == 5)
@@ -374,11 +400,84 @@ public class DominionGUI {
         }
 
         if (baneCard != null) {
-            cardsTable = cardsTable + "</tr><tr><td bgcolor=\"rgb(0,255,0)\"><h1 style=\"font:sans-serif;font-size:1.25em;font-weight:bold\"><center>Bane Card<center></h1>" + getFile(baneCard)
-                    + "</td>";
+            cardsTable = cardsTable + "</tr>";
+            cardsTable = cardsTable + "<tr>";
+            cardsTable = cardsTable + "<td bgcolor=\"rgb(0,255,0)\">";
+            cardsTable = cardsTable + "<h1 style=\"font:sans-serif;font-size:1.25em;font-weight:bold\">";
+            cardsTable = cardsTable + "<center>Bane Card<center>";
+            cardsTable = cardsTable + "</h1>";
+            cardsTable = cardsTable + getFile(baneCard);
+            cardsTable = cardsTable + "</td>";
         }
 
-        cardsTable = cardsTable + "</tr></table>";
+        cardsTable = cardsTable + "</tr>";
+        cardsTable = cardsTable + "</table>";
+
+        return cardsTable;
+    }
+
+    // Create an HTML table to generate the game in a text-only format
+    private String generateTextCardsTable() {
+        String cardsTable = "<table style=\"font:sans-serif\">";
+        cardsTable = cardsTable + "<tr>";
+        cardsTable = cardsTable + "<th>Name</th>";
+        cardsTable = cardsTable + "<th>Types</th>";
+        cardsTable = cardsTable + "<th>Cost</th>";
+        cardsTable = cardsTable + "<th>Attributes</th>";
+        cardsTable = cardsTable + "<th>Set</th>";
+        cardsTable = cardsTable + "</tr>";
+
+        String types;
+        String attributes;
+        for (Card card : gameCards) {
+            types = "";
+            attributes = "";
+            for (String type : card.getTypes()) {
+                types = types + "—" + type;
+            }
+            types = types.substring(1, types.length());
+
+            for (String attribute : card.getAttributes()) {
+                attributes = attributes + ", " + attribute;
+            }
+            if (attributes.length() > 0)
+                attributes = attributes.substring(2, attributes.length());
+
+            cardsTable = cardsTable + "<tr>";
+            cardsTable = cardsTable + "<td>" + card.getName() + "</td>";
+            cardsTable = cardsTable + "<td>" + types + "</td>";
+            cardsTable = cardsTable + "<td>" + card.getCost() + "</td>";
+            cardsTable = cardsTable + "<td>" + attributes + "</td>";
+            cardsTable = cardsTable + "<td>" + card.getSet() + "</td>";
+            cardsTable = cardsTable + "</tr>";
+        }
+
+        if (baneCard != null) {
+            types = "";
+            attributes = "";
+
+            for (String type : baneCard.getTypes()) {
+                types = type + ", ";
+            }
+            types = types.substring(0, types.length() - 3);
+
+            for (String attribute : baneCard.getAttributes()) {
+                attributes = attribute + ", ";
+            }
+            if (attributes.length() > 0)
+                attributes = attributes.substring(0,attributes.length() - 3);
+
+            cardsTable = cardsTable + "<tr bgcolor=\"rgb(0,255,0)\"><th colspan=\"5\">Bane Card</th></tr>";
+            cardsTable = cardsTable + "<tr>";
+            cardsTable = cardsTable + "<td>" + baneCard.getName() + "</td>";
+            cardsTable = cardsTable + "<td>" + types + "</td>";
+            cardsTable = cardsTable + "<td>" + baneCard.getCost() + "</td>";
+            cardsTable = cardsTable + "<td>" + attributes + "</td>";
+            cardsTable = cardsTable + "<td>" + baneCard.getSet() + "</td>";
+            cardsTable = cardsTable + "</tr>";
+        }
+
+        cardsTable = cardsTable + "</table>";
 
         return cardsTable;
     }
