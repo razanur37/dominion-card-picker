@@ -442,11 +442,11 @@ public class DominionGUI {
     private String generateTextCardsTable() {
         String cardsTable = "<table style=\"font:sans-serif\">";
         cardsTable = cardsTable + "<tr>";
-        cardsTable = cardsTable + "<th>Name</th>";
-        cardsTable = cardsTable + "<th>Types</th>";
-        cardsTable = cardsTable + "<th>Cost</th>";
-        cardsTable = cardsTable + "<th>Attributes</th>";
-        cardsTable = cardsTable + "<th>Set</th>";
+        cardsTable = cardsTable + "<th style=\"width:125px\">Name</th>";
+        cardsTable = cardsTable + "<th style=\"width:130px\">Types</th>";
+        cardsTable = cardsTable + "<th style=\"width:40px\">Cost</th>";
+        cardsTable = cardsTable + "<th style=\"width:150px\">Attributes</th>";
+        cardsTable = cardsTable + "<th style=\"width:60px\">Set</th>";
         cardsTable = cardsTable + "</tr>";
 
         for (Card card : gameCards) {
@@ -471,7 +471,7 @@ public class DominionGUI {
         String row =  "<tr>";
         row = row + "<td>" + card.getName() + "</td>";
         row = row + "<td>" + types + "</td>";
-        row = row + "<td>" + finalCost + "</td>";
+        row = row + "<td style=\"text-align:center\">" + finalCost + "</td>";
         row = row + "<td>" + attributes + "</td>";
         row = row + "<td>" + card.getSet() + "</td>";
         row = row + "</tr>";
