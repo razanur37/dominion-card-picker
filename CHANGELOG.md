@@ -2,12 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Upcoming
+## [1.1.0]
 ### Added
 - Added menu bar, with some options.
 - Added sorting options, changing sorting option after game has been generated will resort the game according to the new sorting selection.
 - Added an option to display a game as a text-only table.
-- Option settings persist after exiting.
+- Preferences persist after exiting.
 
 ### Changed
 - Changed where card images directory structure to include set.

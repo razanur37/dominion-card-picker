@@ -44,7 +44,7 @@ public class DominionGUI {
 
     Preferences prefs = Preferences.userNodeForPackage(DominionGUI.class);
     private int setsSelected = 0;
-    private final String VERSION = "1.0.2";
+    private final String VERSION = "1.1.0";
 
     private ArrayList<Card> gameCards;
     private Card baneCard;
@@ -257,9 +257,9 @@ public class DominionGUI {
         JMenu optionsMenu = new JMenu("Options");
         JMenu sortByMenu = new JMenu("Sort By");
         JCheckBoxMenuItem sortByNameItem = new JCheckBoxMenuItem("Name");
-        JCheckBoxMenuItem sortByCostItem = new JCheckBoxMenuItem("Cost, then Name");
+        JCheckBoxMenuItem sortByCostItem = new JCheckBoxMenuItem("Cost");
         JCheckBoxMenuItem sortBySetItem = new JCheckBoxMenuItem("Set, then Name");
-        JCheckBoxMenuItem sortBySetCostItem = new JCheckBoxMenuItem("Set, then Cost, then Name");
+        JCheckBoxMenuItem sortBySetCostItem = new JCheckBoxMenuItem("Set, then Cost");
 
         JMenu helpMenu = new JMenu("Help");
         JMenuItem helpItem= new JMenuItem("Help");
@@ -449,51 +449,33 @@ public class DominionGUI {
         cardsTable = cardsTable + "<th>Set</th>";
         cardsTable = cardsTable + "</tr>";
 
+        String finalCost;
         String types;
         String attributes;
         for (Card card : gameCards) {
-            types = "";
-            attributes = "";
-            for (String type : card.getTypes()) {
-                types = types + "—" + type;
-            }
-            types = types.substring(1, types.length());
-
-            for (String attribute : card.getAttributes()) {
-                attributes = attributes + ", " + attribute;
-            }
-            if (attributes.length() > 0)
-                attributes = attributes.substring(2, attributes.length());
+            finalCost = convertCost(card.getCost());
+            types = convertTypes(card.getTypes());
+            attributes = convertAttributes(card.getAttributes());
 
             cardsTable = cardsTable + "<tr>";
             cardsTable = cardsTable + "<td>" + card.getName() + "</td>";
             cardsTable = cardsTable + "<td>" + types + "</td>";
-            cardsTable = cardsTable + "<td>" + card.getCost() + "</td>";
+            cardsTable = cardsTable + "<td>" + finalCost + "</td>";
             cardsTable = cardsTable + "<td>" + attributes + "</td>";
             cardsTable = cardsTable + "<td>" + card.getSet() + "</td>";
             cardsTable = cardsTable + "</tr>";
         }
 
         if (baneCard != null) {
-            types = "";
-            attributes = "";
-
-            for (String type : baneCard.getTypes()) {
-                types = type + ", ";
-            }
-            types = types.substring(0, types.length() - 3);
-
-            for (String attribute : baneCard.getAttributes()) {
-                attributes = attribute + ", ";
-            }
-            if (attributes.length() > 0)
-                attributes = attributes.substring(0,attributes.length() - 3);
+            finalCost = convertCost(baneCard.getCost());
+            types = convertTypes(baneCard.getTypes());
+            attributes = convertAttributes(baneCard.getAttributes());
 
             cardsTable = cardsTable + "<tr bgcolor=\"rgb(0,255,0)\"><th colspan=\"5\">Bane Card</th></tr>";
             cardsTable = cardsTable + "<tr>";
             cardsTable = cardsTable + "<td>" + baneCard.getName() + "</td>";
             cardsTable = cardsTable + "<td>" + types + "</td>";
-            cardsTable = cardsTable + "<td>" + baneCard.getCost() + "</td>";
+            cardsTable = cardsTable + "<td>" + finalCost + "</td>";
             cardsTable = cardsTable + "<td>" + attributes + "</td>";
             cardsTable = cardsTable + "<td>" + baneCard.getSet() + "</td>";
             cardsTable = cardsTable + "</tr>";
@@ -502,6 +484,40 @@ public class DominionGUI {
         cardsTable = cardsTable + "</table>";
 
         return cardsTable;
+    }
+
+    private String convertCost(int cost) {
+        String finalCost;
+        if (cost > 80)
+            finalCost = Integer.toString(cost-80) + 'P';
+        else if (cost == 80)
+            finalCost = "P";
+        else
+            finalCost = Integer.toString(cost);
+
+        return finalCost;
+    }
+
+    private String convertTypes(ArrayList<String> typeList) {
+        String types = "";
+
+        for (String type : typeList) {
+            types = types + "—" + type;
+        }
+        types = types.substring(1, types.length());
+
+        return types;
+    }
+
+    private String convertAttributes(ArrayList<String> attributeList) {
+        String attributes = "";
+        for (String attribute : attributeList) {
+            attributes = attributes + ", " + attribute;
+        }
+        if (attributes.length() > 0)
+            attributes = attributes.substring(2, attributes.length());
+
+        return attributes;
     }
 
     // Converts the name of the given card into the format used in the 'img'
