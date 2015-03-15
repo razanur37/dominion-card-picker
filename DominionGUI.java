@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -242,6 +244,12 @@ public class DominionGUI {
         frame = new JFrame("Dominion Card Picker");
         frame.setContentPane(new DominionGUI().panel);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        URL url = ClassLoader.getSystemResource("resources/icon.png");
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image icon = kit.createImage(url);
+        frame.setIconImage(icon);
+
         frame.pack();
         frame.setVisible(true);
     }
