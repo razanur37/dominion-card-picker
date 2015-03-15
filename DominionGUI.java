@@ -449,41 +449,34 @@ public class DominionGUI {
         cardsTable = cardsTable + "<th>Set</th>";
         cardsTable = cardsTable + "</tr>";
 
-        String finalCost;
-        String types;
-        String attributes;
         for (Card card : gameCards) {
-            finalCost = convertCost(card.getCost());
-            types = convertTypes(card.getTypes());
-            attributes = convertAttributes(card.getAttributes());
-
-            cardsTable = cardsTable + "<tr>";
-            cardsTable = cardsTable + "<td>" + card.getName() + "</td>";
-            cardsTable = cardsTable + "<td>" + types + "</td>";
-            cardsTable = cardsTable + "<td>" + finalCost + "</td>";
-            cardsTable = cardsTable + "<td>" + attributes + "</td>";
-            cardsTable = cardsTable + "<td>" + card.getSet() + "</td>";
-            cardsTable = cardsTable + "</tr>";
+            cardsTable = cardsTable + generateRow(card);
         }
 
         if (baneCard != null) {
-            finalCost = convertCost(baneCard.getCost());
-            types = convertTypes(baneCard.getTypes());
-            attributes = convertAttributes(baneCard.getAttributes());
-
             cardsTable = cardsTable + "<tr bgcolor=\"rgb(0,255,0)\"><th colspan=\"5\">Bane Card</th></tr>";
-            cardsTable = cardsTable + "<tr>";
-            cardsTable = cardsTable + "<td>" + baneCard.getName() + "</td>";
-            cardsTable = cardsTable + "<td>" + types + "</td>";
-            cardsTable = cardsTable + "<td>" + finalCost + "</td>";
-            cardsTable = cardsTable + "<td>" + attributes + "</td>";
-            cardsTable = cardsTable + "<td>" + baneCard.getSet() + "</td>";
-            cardsTable = cardsTable + "</tr>";
+            cardsTable = cardsTable + generateRow(baneCard);
         }
 
         cardsTable = cardsTable + "</table>";
 
         return cardsTable;
+    }
+
+    private String generateRow(Card card) {
+        String finalCost = convertCost(card.getCost());
+        String types = convertTypes(card.getTypes());
+        String attributes = convertAttributes(card.getAttributes());
+
+        String row =  "<tr>";
+        row = row + "<td>" + card.getName() + "</td>";
+        row = row + "<td>" + types + "</td>";
+        row = row + "<td>" + finalCost + "</td>";
+        row = row + "<td>" + attributes + "</td>";
+        row = row + "<td>" + card.getSet() + "</td>";
+        row = row + "</tr>";
+
+        return row;
     }
 
     private String convertCost(int cost) {
