@@ -2,16 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Upcoming
+## [1.1.0]
 ### Added
 - Added menu bar, with some options.
 - Added sorting options, changing sorting option after game has been generated will resort the game according to the new sorting selection.
 - Added an option to display a game as a text-only table.
-- Option settings persist after exiting.
+- Preferences persist after exiting.
 
 ### Changed
 - Changed where card images directory structure to include set.
 - Changed the `Require Card Draw` option to put a card that gives at least +2 cards in the game, as opposed to +1 before.
+- Added custom icon.
 
 ### Fixed
 - Fixed bug where a card chosen to fulfil a `Require X` option would not be removed from the global card pool, thus enabling it to be chosen twice for the same game.

@@ -7,11 +7,16 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.prefs.Preferences;
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 public class DominionGUI {
     private JPanel panel;
@@ -44,7 +49,7 @@ public class DominionGUI {
 
     Preferences prefs = Preferences.userNodeForPackage(DominionGUI.class);
     private int setsSelected = 0;
-    private final String VERSION = "1.0.2";
+    private final String VERSION = "1.1.0";
 
     private ArrayList<Card> gameCards;
     private Card baneCard;
@@ -242,6 +247,12 @@ public class DominionGUI {
         frame = new JFrame("Dominion Card Picker");
         frame.setContentPane(new DominionGUI().panel);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        URL url = ClassLoader.getSystemResource("resources/icon.png");
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image icon = kit.createImage(url);
+        frame.setIconImage(icon);
+
         frame.pack();
         frame.setVisible(true);
     }
@@ -257,9 +268,9 @@ public class DominionGUI {
         JMenu optionsMenu = new JMenu("Options");
         JMenu sortByMenu = new JMenu("Sort By");
         JCheckBoxMenuItem sortByNameItem = new JCheckBoxMenuItem("Name");
-        JCheckBoxMenuItem sortByCostItem = new JCheckBoxMenuItem("Cost, then Name");
+        JCheckBoxMenuItem sortByCostItem = new JCheckBoxMenuItem("Cost");
         JCheckBoxMenuItem sortBySetItem = new JCheckBoxMenuItem("Set, then Name");
-        JCheckBoxMenuItem sortBySetCostItem = new JCheckBoxMenuItem("Set, then Cost, then Name");
+        JCheckBoxMenuItem sortBySetCostItem = new JCheckBoxMenuItem("Set, then Cost");
 
         JMenu helpMenu = new JMenu("Help");
         JMenuItem helpItem= new JMenuItem("Help");
@@ -335,6 +346,19 @@ public class DominionGUI {
         } catch (IOException io) {
             io.printStackTrace();
         }
+
+        helpEditorPane.addHyperlinkListener(e -> {
+            if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                if(Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(e.getURL().toURI());
+                    }
+                    catch (IOException | URISyntaxException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        });
 
         JScrollPane helpScrollPane = new JScrollPane(helpEditorPane);
 
@@ -442,66 +466,75 @@ public class DominionGUI {
     private String generateTextCardsTable() {
         String cardsTable = "<table style=\"font:sans-serif\">";
         cardsTable = cardsTable + "<tr>";
-        cardsTable = cardsTable + "<th>Name</th>";
-        cardsTable = cardsTable + "<th>Types</th>";
-        cardsTable = cardsTable + "<th>Cost</th>";
-        cardsTable = cardsTable + "<th>Attributes</th>";
-        cardsTable = cardsTable + "<th>Set</th>";
+        cardsTable = cardsTable + "<th style=\"width:125px\">Name</th>";
+        cardsTable = cardsTable + "<th style=\"width:130px\">Types</th>";
+        cardsTable = cardsTable + "<th style=\"width:40px\">Cost</th>";
+        cardsTable = cardsTable + "<th style=\"width:150px\">Attributes</th>";
+        cardsTable = cardsTable + "<th style=\"width:60px\">Set</th>";
         cardsTable = cardsTable + "</tr>";
 
-        String types;
-        String attributes;
         for (Card card : gameCards) {
-            types = "";
-            attributes = "";
-            for (String type : card.getTypes()) {
-                types = types + "—" + type;
-            }
-            types = types.substring(1, types.length());
-
-            for (String attribute : card.getAttributes()) {
-                attributes = attributes + ", " + attribute;
-            }
-            if (attributes.length() > 0)
-                attributes = attributes.substring(2, attributes.length());
-
-            cardsTable = cardsTable + "<tr>";
-            cardsTable = cardsTable + "<td>" + card.getName() + "</td>";
-            cardsTable = cardsTable + "<td>" + types + "</td>";
-            cardsTable = cardsTable + "<td>" + card.getCost() + "</td>";
-            cardsTable = cardsTable + "<td>" + attributes + "</td>";
-            cardsTable = cardsTable + "<td>" + card.getSet() + "</td>";
-            cardsTable = cardsTable + "</tr>";
+            cardsTable = cardsTable + generateRow(card);
         }
 
         if (baneCard != null) {
-            types = "";
-            attributes = "";
-
-            for (String type : baneCard.getTypes()) {
-                types = type + ", ";
-            }
-            types = types.substring(0, types.length() - 3);
-
-            for (String attribute : baneCard.getAttributes()) {
-                attributes = attribute + ", ";
-            }
-            if (attributes.length() > 0)
-                attributes = attributes.substring(0,attributes.length() - 3);
-
             cardsTable = cardsTable + "<tr bgcolor=\"rgb(0,255,0)\"><th colspan=\"5\">Bane Card</th></tr>";
-            cardsTable = cardsTable + "<tr>";
-            cardsTable = cardsTable + "<td>" + baneCard.getName() + "</td>";
-            cardsTable = cardsTable + "<td>" + types + "</td>";
-            cardsTable = cardsTable + "<td>" + baneCard.getCost() + "</td>";
-            cardsTable = cardsTable + "<td>" + attributes + "</td>";
-            cardsTable = cardsTable + "<td>" + baneCard.getSet() + "</td>";
-            cardsTable = cardsTable + "</tr>";
+            cardsTable = cardsTable + generateRow(baneCard);
         }
 
         cardsTable = cardsTable + "</table>";
 
         return cardsTable;
+    }
+
+    private String generateRow(Card card) {
+        String finalCost = convertCost(card.getCost());
+        String types = convertTypes(card.getTypes());
+        String attributes = convertAttributes(card.getAttributes());
+
+        String row =  "<tr>";
+        row = row + "<td>" + card.getName() + "</td>";
+        row = row + "<td>" + types + "</td>";
+        row = row + "<td style=\"text-align:center\">" + finalCost + "</td>";
+        row = row + "<td>" + attributes + "</td>";
+        row = row + "<td>" + card.getSet() + "</td>";
+        row = row + "</tr>";
+
+        return row;
+    }
+
+    private String convertCost(int cost) {
+        String finalCost;
+        if (cost > 80)
+            finalCost = Integer.toString(cost-80) + 'P';
+        else if (cost == 80)
+            finalCost = "P";
+        else
+            finalCost = Integer.toString(cost);
+
+        return finalCost;
+    }
+
+    private String convertTypes(ArrayList<String> typeList) {
+        String types = "";
+
+        for (String type : typeList) {
+            types = types + "—" + type;
+        }
+        types = types.substring(1, types.length());
+
+        return types;
+    }
+
+    private String convertAttributes(ArrayList<String> attributeList) {
+        String attributes = "";
+        for (String attribute : attributeList) {
+            attributes = attributes + ", " + attribute;
+        }
+        if (attributes.length() > 0)
+            attributes = attributes.substring(2, attributes.length());
+
+        return attributes;
     }
 
     // Converts the name of the given card into the format used in the 'img'
