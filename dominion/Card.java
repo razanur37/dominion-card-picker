@@ -2,8 +2,6 @@
 
 package dominion;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
-
 import java.util.ArrayList;
 
 public class Card {

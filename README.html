@@ -1,0 +1,63 @@
+<h1 id="dominion-card-picker-1.1.0">Dominion Card Picker 1.1.0</h1>
+<p>This is a Java-based tool to generate a game of <a href="http://riograndegames.com/Game/278-Dominion">Dominion</a>. You choose which sets you wish use (as well as any promotional cards) and the game will randomly choose 10 cards from those sets to be used for your game. You can also restrict the cards that are chosen with various options (EG requiring no attack cards, or requiring a defense card if an attack has been selected).</p>
+<h1 id="usage">Usage</h1>
+<p>This tool requires at least Java Runtime Environment (JRE) 8. If you do not have JRE 8, you can obtain it from <a href="https://java.com/en/download/">Oracle</a>.</p>
+<h1 id="help">Help</h1>
+<h2 id="selecting-the-sets-to-use">Selecting the Sets to Use</h2>
+<p>To select which sets you want the program to choose from, simply check the box next to each set name. If you want to use any of the promotional cards, just check the boxes next to their names. At least 1 set must be selected before a game can be generated.</p>
+<h2 id="options">Options</h2>
+<p>If you wish, you can set guidelines for the program by selecting any of the options. A description of each option follows.</p>
+<h3 id="use-3-5-alchemy-card-recommendation">Use 3-5 Alchemy Card Recommendation</h3>
+<p>The instructions for the Alchemy set recommend you play using 3-5 cards from the set. If you wish to follow this recommendation, check the box.</p>
+<p>Note that this option will be disabled unless you select another set <i>in addition to</i> Alchemy.</p>
+<h3 id="no-attacks">No Attacks</h3>
+<p>If selected, the generated game will not have any cards that have the <code>Attack</code> type.</p>
+<p>Selecting this will disable the <code>No Cursing</code> and <code>Require Defense</code> options.</p>
+<h3 id="no-cursing">No Cursing</h3>
+<p>If selected, the generated game will not contain any cards which causes players to gain Curses.</p>
+<p>Note that this will only exclude cards which explicitly say &quot;gain a Curse&quot;.<br />There are some cards that, when used in a very specific way, can cause other players to gain Curses (such as Ambassador from the Seaside expansion). These cards will not be excluded and may still be selected for a game, even with this option selected.</p>
+<h3 id="require-buys">Require Buys</h3>
+<p>If selected, the generated game will include at least 1 card that grants an additional buy.<br />Note that this may include cards that will not always give an extra buy.</p>
+<h3 id="require-card-draw">Require Card Draw</h3>
+<p>If selected, the generated game will include at least 1 card that lets the player draw 2 or more cards.<br />Note that this may include cards that will not always let you draw 2 or more cards</p>
+<h3 id="require-defense">Require Defense</h3>
+<p>If selected, the generated game will contain at least 1 card that can prevent an attack from affecting the player, provided the game contains at least 1 attack.</p>
+<p>Note that there are only 2 cards that completely negate attacks, Moat from the Base game and Lighthouse from Seaside. In order for this option to be selected, at least 1 of those sets (Base or Seaside) must be selected.</p>
+<h3 id="require-extra-actions">Require Extra Actions</h3>
+<p>If selected, the generated game will have at least 1 card in it that supplies 2 or more actions.</p>
+<p>Note that this may include cards that will not always give extra actions. For example, the Intrigue card Governor gives the player the choice between gaining 3 cards or 2 actions. Because it is at least <i>possible</i> for Governor to give extra actions is considered to give extra actions by the program.<br />Additionally the Seaside card Tactician gives the player a single action on their next turn if they used it to discard any cards on their current turn. Because the player won't need to spend an action in order to play Tactician on their next turn, the program considers it to give extra actions, despite it only giving 1.</p>
+<h3 id="require-trashing">Require Trashing</h3>
+<p>If selected, the generated game will have at least 1 card that allows the player to trash <i>another</i> card.</p>
+<p>Note that this does not include cards that only trash themselves.<br />Note that this includes cards which may not always allow the player to trash another card.</p>
+<h2 id="settings">Settings</h2>
+<p>Below is a description of the various settings available.</p>
+<h3 id="display-card-images">Display Card Images</h3>
+<p>If enabled, generated games will use pictures of the cards that are chosen. This is the default.</p>
+<p>If disabled, generated games will be displayed in a text-only format, listing each cards name, type(s), cost, attributes (if any), and set.</p>
+<p>The attributes are directly related to the game options:</p>
+<ul>
+<li>Actions: Card gives at least 2 extra actions</li>
+<li>Buys: Card gives at least 1 buy</li>
+<li>Cards: Card gives at least 2 cards</li>
+<li>Curse: Card instructs opponents to gain a Curse</li>
+<li>Defense: Card is a complete defense against an Attack</li>
+<li>Ruins: Card forces other players to gain at least 1 Ruins (a card type specific to Dark Ages)</li>
+<li>Trash: Card lets the player trash other cards</li>
+</ul>
+<h3 id="sort-by">Sort By</h3>
+<p>This group of settings allows the user to choose how generated games are sorted.</p>
+<p>Possible options are:</p>
+<ul>
+<li>Name: The cards will be sorted by name, alphabetically. This is the default.</li>
+<li>Cost: The cards will be sorted from lowest cost to highest cost. Cards with the same cost will be further sorted by name, alphabetically.</li>
+<li>Set, then Name: The cards will be sorted by set, alphabetically. Cards from the same set will be further sorted by name, alphabetically.</li>
+<li>Set, then Cost: The cards will be sorted by set, alphabetically. Cards from the same set will be further sorted by cost, from lowest to highest. Cards from the same set with the same cost will be further sorted by name, alphabetically.</li>
+</ul>
+<h2 id="generating-the-game">Generating the Game</h2>
+<p>To generate the game, simply press <code>Generate</code> after selecting your set(s) and options(s).</p>
+<p>Be aware that the Cornucopia card Young Witch requires the game contain an 11th Kingdom card stack. If the program chooses Young Witch to be used in the game, it will also automatically select the 11th stack (or Bane card stack). This card will be labeled as the Bane card and will appear below the other cards.<br />Because Young Witch requires the Bane stack be a card that costs either 2 or 3, it is possible (especially if Cornucopia is the only set being used) for Young Witch to be in the game along with all 2 and 3 cost cards from the selected set(s). If this happens, the program will issue a warning, letting you know of the issue.<br />There are 3 ways to rectify the issue:</p>
+<ul>
+<li>Regenerate the game, possibly adding additional sets to try and prevent the issue from reoccurring.</li>
+<li>Designate one of the 2 or 3 cost cards in the game as the Bane card and replace it with another card from the selected set(s) that is not in the game.</li>
+<li>If sets are available beyond the ones chosen, pick a card from a different set to act as the Bane card.</li>
+</ul>

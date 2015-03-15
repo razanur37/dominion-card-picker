@@ -2,7 +2,6 @@
 
 package dominion;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -34,6 +33,8 @@ public class Dominion {
     public Dominion(ArrayList<String> sets, Restrictions restrictions) {
         this.sets = new ArrayList<>();
 
+        // Make sure the sets (or promo cards) that were entered in are
+        // legitimate Dominion sets or promos.
         try {
             for (String singleChosenSet: sets) {
                 if (!ALL_SETS.contains(singleChosenSet.toUpperCase()) &&
@@ -41,6 +42,7 @@ public class Dominion {
                     throw new IllegalArgumentException("Set " + singleChosenSet + "is not a valid Dominion set");
                 }
 
+                // Tag promo cards as such so that they can be retrieved from the database
                 String set = PROMOS.contains(singleChosenSet) ? "PROMO-"+properCase(singleChosenSet) : singleChosenSet;
 
                 this.sets.add(set);
@@ -62,6 +64,8 @@ public class Dominion {
         this(new ArrayList<>(Arrays.asList(sets.split(", "))), restrictions);
     }
 
+    // Pull all cards from every set being used in this game, plus any promo
+    // cards being used, from the database.
     private ArrayList<Card> getCardPool() {
         ArrayList<Card> cards = new ArrayList<>();
 
@@ -84,7 +88,7 @@ public class Dominion {
                     String attrs = rs.getString("attributes");
                     ArrayList<String> attributes;
                     if (attrs != null) {
-                        attributes = new ArrayList<>(Arrays.asList(rs.getString("attributes").split(", ")));
+                        attributes = new ArrayList<>(Arrays.asList(attrs.split(", ")));
                     } else {
                         attributes = new ArrayList<>();
                     }
@@ -105,17 +109,20 @@ public class Dominion {
         return cards;
     }
 
+    // Choose the Kingdom cards to be used for the game.
     public void setup() throws Exception {
         gameCards = new ArrayList<>();
 
         Random random = new Random();
         boolean needBane = false;
 
+        // Check all the possible restrictions, then remove any banned cards,
+        // then add cards with desired attributes.
         if (restrictions.isNoAttacks())
-            removeAttacks();
+            removeCardsByType("Attack");
         
         if (!restrictions.isNoAttacks() && restrictions.isNoCursing())
-            removeCursing();
+            removeCardsByAttribute("Curse");
         
         if (restrictions.isUse3_5PotionCards())
             addAlchemyCards();
@@ -130,7 +137,7 @@ public class Dominion {
             }
             
             if (!buyAlreadySelected)
-                addBuy();
+                addCardsByAttribute("Buys");
         }
         if (restrictions.isRequireTrashing()) {
             boolean trashAlreadySelected = false;
@@ -143,7 +150,7 @@ public class Dominion {
             }
 
             if (!trashAlreadySelected)
-                addTrashing();
+                addCardsByAttribute("Trash");
         }
         if (restrictions.isRequireCardDraw()) {
             boolean cardDrawAlreadySelected = false;
@@ -156,7 +163,7 @@ public class Dominion {
             }
 
             if (!cardDrawAlreadySelected)
-                addCardDraw();
+                addCardsByAttribute("Cards");
         }
 
         if (restrictions.isRequireExtraActions()) {
@@ -170,19 +177,23 @@ public class Dominion {
             }
 
             if (!extraActionsAlreadySelected)
-                addExtraActions();
+                addCardsByAttribute("Actions");
         }
 
         boolean attackSelected = false;
         boolean defenseSelected = false;
 
+        // Check to see if an attack or a defense have already been added via
+        // the above methods.
         for (Card card : gameCards) {
             if (card.getTypes().contains("Attack"))
                 attackSelected = true;
             if (card.getAttributes().contains("Defense"))
                 defenseSelected = true;
         }
-        
+
+        // Fill out the remaining slots for the game with cards randomly
+        // selected from the remaining card pool.
         while (gameCards.size() != 10) {
             Card chosenCard = cardPool.get(random.nextInt(cardPool.size()));
             gameCards.add(chosenCard);
@@ -198,6 +209,7 @@ public class Dominion {
                 defenseSelected = true;
         }
 
+        // If Young Witch was chosen, an 11th stack is needed, so choose it.
         if (needBane) {
             Card baneCard;
 
@@ -212,12 +224,16 @@ public class Dominion {
 
             gameCards.add(baneCard);
         }
-        
+
+        // If we are supposed to have a defense and didn't choose one, replace
+        // a chosen (non-attack) card with a defense.
         if (restrictions.isRequireDefense() && attackSelected && !defenseSelected) {
             getADefense();
         }
     }
-    
+
+    // Add 3-5 cards from the Alchemy set to the game, removing all others from
+    // the card pool so that no other Alchemy cards can be chosen.
     private void addAlchemyCards() {
         ArrayList<Card> allAlchemy = new ArrayList<>();
         Random random = new Random();
@@ -239,92 +255,55 @@ public class Dominion {
             allAlchemy.remove(card);
         }
     }
-    
-    private void addBuy() {
-        ArrayList<Card> allBuys = new ArrayList<>();
-        Card buy;
+
+    // Add a single card from the card pool that has the given attribute, then
+    // remove it from the card pool.
+    private void addCardsByAttribute(String attribute) {
+        ArrayList<Card> allDesiredCards = new ArrayList<>();
+
+        Card desiredCard;
 
         for (Card card : cardPool) {
-            if (card.getAttributes().contains("Buys")) {
-                allBuys.add(card);
-            }
-        }
-        
-        buy = allBuys.get(new Random().nextInt(allBuys.size()));
-        
-        gameCards.add(new Card(buy));
-    }
-
-    private void addTrashing() {
-        ArrayList<Card> allTrash = new ArrayList<>();
-        Card trash;
-
-        for (Card card : cardPool) {
-            if (card.getAttributes().contains("Trash")) {
-                allTrash.add(card);
+            if (card.getAttributes().contains(attribute)) {
+                allDesiredCards.add(card);
             }
         }
 
-        trash = allTrash.get(new Random().nextInt(allTrash.size()));
+        desiredCard = allDesiredCards.get(new Random().nextInt(allDesiredCards.size()));
 
-        gameCards.add(new Card(trash));
-    }
-    
-    private void addCardDraw() {
-        ArrayList<Card> allCardDraw = new ArrayList<>();
-        Card cardDraw;
+        cardPool.remove(desiredCard);
 
-        for (Card card : cardPool) {
-            if (card.getAttributes().contains("Cards")) {
-                allCardDraw.add(card);
-            }
-        }
-
-        cardDraw = allCardDraw.get(new Random().nextInt(allCardDraw.size()));
-
-        gameCards.add(new Card(cardDraw));
+        gameCards.add(new Card(desiredCard));
     }
 
-    private void addExtraActions() {
-        ArrayList<Card> allExtraActions = new ArrayList<>();
-        Card extraActions;
-
-        for (Card card : cardPool) {
-            if (card.getAttributes().contains("Actions")) {
-                allExtraActions.add(card);
-            }
-        }
-
-        extraActions = allExtraActions.get(new Random().nextInt(allExtraActions.size()));
-
-        gameCards.add(new Card(extraActions));
-    }
-    
-    private void removeAttacks() {
+    // Remove all cards that contain the specified type from the card pool.
+    private void removeCardsByType(String type) {
         Iterator<Card> iterator = cardPool.iterator();
         while (iterator.hasNext()) {
             Card card = iterator.next();
-            if (card.getTypes().contains("Attack")) {
+            if (card.getTypes().contains(type)) {
                 iterator.remove();
             }
         }
     }
-    
-    private void removeCursing() {
+
+    // Remove all cards with the specified attribute from the card pool.
+    private void removeCardsByAttribute(String attribute) {
         Iterator<Card> iterator = cardPool.iterator();
         while (iterator.hasNext()) {
             Card card = iterator.next();
-            if (card.getAttributes().contains("Curse")) {
+            if (card.getTypes().contains(attribute)) {
                 iterator.remove();
             }
         }
     }
-    
+
+    // Pick a defense card, then pick a non-attack card to replace with the defense.
     private void getADefense() {
         int i = -1;
         ArrayList<Card> allDefense = new ArrayList<>();
         Card defense;
-        
+
         for (Card card : cardPool) {
             if (card.getAttributes().contains("Defense"))
                 allDefense.add(card);
@@ -332,6 +311,8 @@ public class Dominion {
         
         defense = allDefense.get(new Random().nextInt(allDefense.size()));
 
+        // Start at the back of the list to make sure no cards that were added
+        // because of restrictions are replaced.
         for (int j = gameCards.size()-1; j>=0; --j) {
             if (!gameCards.get(j).getTypes().contains("Attack")) {
                 i = j;
@@ -339,6 +320,10 @@ public class Dominion {
             }
         }
 
+        // If all cards in the game are attacks, simply replace the very last
+        // one in the list. This guarantees that restrictions are not violated.
+        // Additionally, this guarantees that Young Witch (should it be in the
+        // game), cannot be replaced.
         if (i == -1) {
             i = gameCards.size()-1;
         }
@@ -347,7 +332,9 @@ public class Dominion {
         gameCards.set(i, defense);
         cardPool.remove(defense);
     }
-    
+
+    // Pick out all the possible cards that can fill the 'Bane card' role
+    // (cost 2 or 3).
     private ArrayList<Card> getBaneCandidates() {
         ArrayList<Card> baneCandidates = new ArrayList<>();
         
@@ -363,7 +350,8 @@ public class Dominion {
     public ArrayList<Card> getCards() {
         return gameCards;
     }
-    
+
+    // Keeps track of all restrictions for the game.
     public static class Restrictions {
         private boolean use3_5PotionCards;
         private boolean noAttacks;
