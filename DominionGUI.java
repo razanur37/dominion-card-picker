@@ -339,7 +339,7 @@ public class DominionGUI {
 
         helpEditorPane.setEditable(false);
 
-        java.net.URL helpURL = DominionGUI.class.getResource("README.HTML");
+        java.net.URL helpURL = DominionGUI.class.getResource("README.html");
 
         try {
             helpEditorPane.setPage(helpURL);

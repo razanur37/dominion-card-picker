@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added custom icon.
 
 ### Fixed
-- Fixed bug where a card chosen to fulfil a `Require X` option would not be removed from the global card pool, thus enabling it to be chosen twice for the same game.
+- Fixed bug where a card chosen to fulfill a `Require X` option would not be removed from the global card pool, thus enabling it to be chosen twice for the same game.
 
 ## [1.0.2] - 7-March-2015
 ### Fixed
