@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added menu bar, with some options.
 - Added sorting options, changing sorting option after game has been generated will resort the game according to the new sorting selection.
 - Added an option to display a game as a text-only table.
+- Option settings persist after exiting.
 
 ### Changed
 - Changed where card images directory structure to include set.

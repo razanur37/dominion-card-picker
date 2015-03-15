@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.prefs.Preferences;
 import javax.swing.*;
 
 public class DominionGUI {
@@ -41,6 +42,7 @@ public class DominionGUI {
     private JCheckBox requireExtraActionsCheckBox;
     private JCheckBox noCursingCheckBox;
 
+    Preferences prefs = Preferences.userNodeForPackage(DominionGUI.class);
     private int setsSelected = 0;
     private final String VERSION = "1.0.2";
 
@@ -49,8 +51,12 @@ public class DominionGUI {
 
     private enum SortOption {NAME, COST, SET, SET_COST}
 
-    private SortOption sortOption = SortOption.NAME;
-    private boolean imagesOn = true;
+    private static final String SORT_OPTION = "0";
+    private SortOption sortOption = SortOption.values()[prefs.getInt(SORT_OPTION, 0)];
+
+
+    private static final String IMAGES_ON = "true";
+    private boolean imagesOn = prefs.getBoolean(IMAGES_ON, true);
 
     public DominionGUI() {
         addMenus();
@@ -263,12 +269,25 @@ public class DominionGUI {
         fileMenu.add(exitItem);
 
         menuBar.add(viewMenu);
-        viewImages.setSelected(true);
+        viewImages.setSelected(prefs.getBoolean(IMAGES_ON, true));
         viewMenu.add(viewImages);
 
         ButtonGroup sortGroup = new ButtonGroup();
 
-        sortByNameItem.setSelected(true);
+        switch (sortOption) {
+            case NAME:
+                sortByNameItem.setSelected(true);
+                break;
+            case COST:
+                sortByCostItem.setSelected(true);
+                break;
+            case SET:
+                sortBySetItem.setSelected(true);
+                break;
+            case SET_COST:
+                sortBySetCostItem.setSelected(true);
+                break;
+        }
 
         sortGroup.add(sortByNameItem);
         sortGroup.add(sortByCostItem);
@@ -323,6 +342,7 @@ public class DominionGUI {
 
         viewImages.addItemListener(e -> {
             imagesOn = !imagesOn;
+            prefs.putBoolean(IMAGES_ON, imagesOn);
             if (gameCards != null && gameCards.size() == 10)
                 cardList.setText(imagesOn ? generateImageCardsTable() : generateTextCardsTable());
         });
@@ -336,6 +356,9 @@ public class DominionGUI {
                 sortOption = SortOption.SET;
             else
                 sortOption = SortOption.SET_COST;
+
+            if (e.getStateChange() == ItemEvent.SELECTED)
+                prefs.putInt(SORT_OPTION, sortOption.ordinal());
 
             // If the game has already been generated, resort the current game
             // according to the new choice.
