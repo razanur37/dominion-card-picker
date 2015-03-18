@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
 public class DominionGUI {
     private JPanel panel;
@@ -234,6 +233,8 @@ public class DominionGUI {
 
             // Display the cards chosen for the game.
             cardList.setText(imagesOn ? generateImageCardsTable() : generateTextCardsTable());
+
+            export();
         });
     }
 
@@ -547,5 +548,39 @@ public class DominionGUI {
             path = card + ".jpg";
         }
         return path;
+    }
+
+    private void export () {
+        Export write = new Export("test.txt");
+        ArrayList<Card> exportCards = new ArrayList<>(gameCards);
+        ArrayList<String> exportSets = new ArrayList<>();
+        Collections.sort(exportCards, Comparator.comparing(Card::getSet));
+        String text = "";
+
+        for (Card card : exportCards) {
+            exportSets.add(card.getSet());
+        }
+
+        int i = 0;
+
+        while (i < 10) {
+            text += exportSets.get(i) + "\n";
+            int j = Collections.frequency(exportSets, exportSets.get(i));
+
+            ArrayList<Card> oneSet = new ArrayList<> (exportCards.subList(i,j+i));
+
+            i += j;
+
+            for (Card card : oneSet) {
+                text += "\t" + card.getName() + "\n";
+            }
+
+        }
+
+        try {
+            write.writeToFile(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
