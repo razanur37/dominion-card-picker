@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.0]
+## [1.1.1] - 18 March 2015
+### Fixed
+- Fixed bug where Jack of All Trades' image would not load.
+
+## [1.1.0] - 15 March 2015
 ### Added
 - Added menu bar, with some options.
 - Added sorting options, changing sorting option after game has been generated will resort the game according to the new sorting selection.
