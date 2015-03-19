@@ -48,7 +48,7 @@ public class DominionGUI {
 
     Preferences prefs = Preferences.userNodeForPackage(DominionGUI.class);
     private int setsSelected = 0;
-    private final String VERSION = "1.1.0";
+    private final String VERSION = "1.1.1";
 
     private ArrayList<Card> gameCards;
     private Card baneCard;
