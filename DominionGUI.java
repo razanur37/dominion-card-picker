@@ -49,7 +49,7 @@ public class DominionGUI {
 
     Preferences prefs = Preferences.userNodeForPackage(DominionGUI.class);
     private int setsSelected = 0;
-    private final String VERSION = "1.1.1";
+    private final String VERSION = "1.1.2";
 
     private ArrayList<Card> gameCards;
     private Card baneCard;
@@ -339,7 +339,7 @@ public class DominionGUI {
 
         helpEditorPane.setEditable(false);
 
-        java.net.URL helpURL = DominionGUI.class.getResource("README.HTML");
+        java.net.URL helpURL = DominionGUI.class.getResource("README.html");
 
         try {
             helpEditorPane.setPage(helpURL);
