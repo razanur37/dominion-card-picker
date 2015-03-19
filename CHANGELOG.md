@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.1.0] - 15-March-2015
+## [1.1.1] - 18 March 2015
+### Fixed
+- Fixed bug where Jack of All Trades' image would not load.
+
+## [1.1.0] - 15 March 2015
 ### Added
 - Added menu bar, with some options.
 - Added sorting options, changing sorting option after game has been generated will resort the game according to the new sorting selection.
@@ -15,7 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Added custom icon.
 
 ### Fixed
-- Fixed bug where a card chosen to fulfill a `Require X` option would not be removed from the global card pool, thus enabling it to be chosen twice for the same game.
+- Fixed bug where a card chosen to fulfil a `Require X` option would not be removed from the global card pool, thus enabling it to be chosen twice for the same game.
 
 ## [1.0.2] - 7-March-2015
 ### Fixed
