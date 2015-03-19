@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.2] - 19 March 2015
+### Fixed
+- Fixed bug where Help screen would be blank.
+
 ## [1.1.1] - 18 March 2015
 ### Fixed
 - Fixed bug where Jack of All Trades' image would not load.
